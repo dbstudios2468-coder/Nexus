@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Nexus Ultra</title>
+<title>Nexus</title>
 
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -132,13 +132,16 @@ body.light .text-mode .msg { background: rgba(255,255,255,0.6); box-shadow: inse
 .chip { background: var(--glass-heavy); border: 1px solid var(--border); color: var(--text); padding: 8px 15px; border-radius: 100px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
 .chip:hover { border-color: var(--accent); color: var(--accent); }
 
-/* Images & Markdown */
-.ai-img { width: 100%; max-width: 512px; border-radius: 12px; margin-top: 10px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); cursor: pointer; }
+/* Images & Loading States */
+.img-wrapper { position: relative; margin-top: 10px; display: inline-block; max-width: 100%; width: 100%; min-width: 250px; }
+.ai-img { width: 100%; max-width: 512px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: block; transition: opacity 0.3s ease; }
+.img-loading { padding: 50px 20px; text-align: center; background: var(--glass-heavy); border-radius: 12px; border: 1px dashed var(--accent); color: var(--accent); font-weight: 600; font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 15px; max-width: 512px; }
+
 .msg strong { font-weight: 800; }
 .msg blockquote { border-left: 3px solid var(--accent); margin: 10px 0; padding-left: 10px; opacity: 0.8; }
 .code-wrapper { position: relative; margin: 10px 0; }
-.copy-code-btn { position: absolute; top: 5px; right: 5px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px; padding: 4px 8px; font-size: 0.7rem; cursor: pointer; z-index: 10; backdrop-filter: blur(5px); }
-.copy-code-btn:hover { background: var(--accent); color: #000; }
+.overlay-btn { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px; padding: 6px 10px; font-size: 0.75rem; cursor: pointer; z-index: 10; backdrop-filter: blur(5px); transition: 0.2s; }
+.overlay-btn:hover { background: var(--accent); color: #000; }
 .msg pre { background: rgba(0,0,0,0.3); padding: 35px 15px 15px; border-radius: 12px; overflow-x: auto; margin: 0; }
 body.light .msg pre { background: rgba(0,0,0,0.05); }
 .msg code { font-family: monospace; }
@@ -180,7 +183,7 @@ textarea#input {
   header { padding: 10px; }
   .header-btn { padding: 5px 10px; font-size: 1.1rem; }
   #modelSelect { max-width: 140px; font-size: 0.7rem; padding: 6px 4px; }
-  #header-title { display: none; } /* Hide title on small screens */
+  #header-title { display: none; } 
   
   #view { padding: 15px 10px; gap: 15px; }
   .msg-container { max-width: 95%; }
@@ -253,7 +256,7 @@ textarea#input {
       <div class="input-row">
         <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(this)">
         <button class="attach-btn" onclick="$('fileInput').click()" title="Attach File">📎</button>
-        <textarea id="input" rows="1" placeholder="Message, /search, /image, /text, or /advise..." autocomplete="off"></textarea>
+        <textarea id="input" rows="1" placeholder="Message, /search, /image, /himage, /text..." autocomplete="off"></textarea>
         <button class="circle-btn" onclick="send()">↑</button>
       </div>
     </footer>
@@ -280,7 +283,7 @@ function md(t){
   let parsed = t
     .replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
         return `<div class="code-wrapper">
-                  <button class="copy-code-btn" onclick="copyToClipboard(this)">Copy</button>
+                  <button class="overlay-btn" onclick="copyToClipboard(this)">Copy</button>
                   <pre><code>${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
                 </div>`;
     })
@@ -299,10 +302,33 @@ function copyToClipboard(btn) {
     setTimeout(() => btn.innerText = "Copy", 2000);
 }
 
+// True Download for Images
+async function downloadImage(imgUrl, fileName, btn) {
+    btn.innerText = "⏳ Downloading...";
+    try {
+        const response = await fetch(imgUrl);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName + '.jpg';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        btn.innerText = "✓ Saved";
+        setTimeout(() => btn.innerText = "📥 Download", 2000);
+    } catch(e) {
+        window.open(imgUrl, '_blank');
+        btn.innerText = "📥 Download";
+    }
+}
+
 /* ===== 3. STATE & TIMESTAMPS ===== */
-let chats = JSON.parse(localStorage.getItem("nexus_v14_chats")||"[]");
-let active = localStorage.getItem("nexus_v14_active");
+let chats = JSON.parse(localStorage.getItem("nexus_v19_chats")||"[]");
+let active = localStorage.getItem("nexus_v19_active");
 let globalInstructions = localStorage.getItem("nexus_memory") || "";
+let isGeneratingImage = false; // GLOBAL IMAGE LOCK
 
 if (!chats.length) newChat(true);
 $("systemPrompt").value = globalInstructions;
@@ -325,7 +351,7 @@ function newChat(isInit = false){
 }
 
 function loadChat(id){
-  active = id; localStorage.setItem("nexus_v14_active",id);
+  active = id; localStorage.setItem("nexus_v19_active",id);
   $("view").innerHTML="";
   const chat = chats.find(c=>c.id===id);
   if(chat) {
@@ -353,7 +379,7 @@ function renderList(){
   });
 }
 
-function save(){ localStorage.setItem("nexus_v14_chats",JSON.stringify(chats)); }
+function save(){ localStorage.setItem("nexus_v19_chats",JSON.stringify(chats)); }
 function deleteChat(id){ 
   chats = chats.filter(c=>c.id!==id); save(); renderList(); 
   if(chats.length) loadChat(chats[0].id); else newChat(); 
@@ -374,8 +400,8 @@ function showChips() {
     const prompts = [
         "/search Latest AI breakthroughs",
         "/text Write a formal essay on AI", 
-        "/advise Is it a good time to buy tech stocks?", 
-        "/image a cyberpunk city"
+        "/himage a futuristic neon city",
+        "/image a sleek sports car"
     ];
     prompts.forEach(p => {
         const btn = document.createElement("button");
@@ -463,18 +489,52 @@ async function send(){
   chat.messages.push(user);
   renderMsg(user, chat.messages.length - 1);
 
-  if (chat.messages.length === 1) chat.title = rawText.replace("/text ", "").replace("/advise ", "").replace("/search ", "").slice(0, 15);
+  if (chat.messages.length === 1) {
+      chat.title = rawText.replace("/text ", "").replace("/advise ", "").replace("/search ", "").replace("/himage ", "").replace("/image ", "").slice(0, 15);
+  }
 
-  // IMAGE INTERCEPTOR
-  if(rawText.toLowerCase().startsWith("/image ")){
-    const prompt = rawText.replace("/image ", "");
-    const cleanPrompt = prompt.replace(/[^a-zA-Z0-9 ]/g, "");
-    const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=512&height=512&seed=${Math.floor(Math.random()*1000)}&nologo=true`;
+  // IMAGE INTERCEPTORS (/image for Fast, /himage for High-Res Flux)
+  const isImage = rawText.toLowerCase().startsWith("/image ");
+  const isHImage = rawText.toLowerCase().startsWith("/himage ");
+
+  if(isImage || isHImage){
     
-    const botMsg = {role:"assistant", reply:`Generated Image: **${prompt}**`, img: imgUrl, time: getTime()};
+    // Check if an image is already generating
+    if(isGeneratingImage) {
+        const tempMsg = document.createElement("div");
+        tempMsg.className = "msg-container them text-mode";
+        tempMsg.style.maxWidth = "85%";
+        tempMsg.innerHTML = `<div class="msg" style="color: #ff4d00; border-color: #ff4d00; background: rgba(255, 77, 0, 0.1); padding: 12px;">⏳ Nexus is currently rendering an image. Please wait until it finishes before requesting another one.</div>`;
+        $("view").appendChild(tempMsg);
+        $("view").scrollTop = $("view").scrollHeight;
+        setTimeout(() => tempMsg.remove(), 4000); // Remove warning after 4 seconds
+        return;
+    }
+      
+    // Lock the image engine
+    isGeneratingImage = true;
+
+    const prefix = isImage ? "/image " : "/himage ";
+    const prompt = rawText.substring(prefix.length).trim();
+    const cleanPrompt = encodeURIComponent(prompt.replace(/[^a-zA-Z0-9 ]/g, ""));
+    const randomSeed = Math.floor(Math.random() * 1000000);
+    
+    let imgUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1024&height=1024&seed=${randomSeed}&nologo=true`;
+    if(isHImage) imgUrl += `&model=flux`; 
+    
+    const replyText = isHImage ? `Generating High-Res Image: **${prompt}**` : `Generating Fast Image: **${prompt}**`;
+
+    const botMsg = {
+        role: "assistant", 
+        reply: replyText, 
+        img: imgUrl, 
+        time: getTime()
+    };
+    
     chat.messages.push(botMsg);
     renderMsg(botMsg, chat.messages.length - 1);
-    save(); return;
+    save(); 
+    return;
   }
 
   // COMMAND INTERCEPTORS
@@ -544,11 +604,48 @@ function renderMsg(m, idx){
   bubble.className = "msg";
   bubble.innerHTML = m.role==="user" ? m.text : md(m.reply);
   
+  // Custom Smooth Image Loading Logic with Lock Release
   if(m.img) {
+    const imgWrap = document.createElement('div');
+    imgWrap.className = "img-wrapper";
+    
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = "img-loading";
+    loadingDiv.innerHTML = `<div style="display:flex; gap:5px;"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><span>Generating Image...</span>`;
+    imgWrap.appendChild(loadingDiv);
+
     const img = document.createElement('img');
-    img.src = m.img; img.className = "ai-img";
-    img.onerror = () => { img.style.display = 'none'; bubble.innerHTML += "<br><em>[Image Error]</em>"; };
-    bubble.appendChild(img);
+    img.className = "ai-img";
+    img.style.display = "none"; 
+
+    const dlBtn = document.createElement('button');
+    dlBtn.className = "overlay-btn";
+    dlBtn.innerHTML = "📥 Download";
+    dlBtn.style.display = "none"; 
+    dlBtn.onclick = (e) => {
+        e.stopPropagation();
+        downloadImage(m.img, "Nexus_Image_" + Date.now(), dlBtn);
+    };
+
+    img.onload = () => {
+        loadingDiv.style.display = "none"; 
+        img.style.display = "block";       
+        dlBtn.style.display = "block";     
+        $("view").scrollTop = $("view").scrollHeight; 
+        isGeneratingImage = false; // RELEASE LOCK ON SUCCESS
+    };
+
+    img.onerror = () => { 
+        loadingDiv.style.display = 'none'; 
+        imgWrap.innerHTML = `<br><em>[Image generation timed out. <a href="${m.img}" target="_blank" style="color:var(--accent)">Click here to view it directly</a>]</em>`;
+        isGeneratingImage = false; // RELEASE LOCK ON ERROR
+    };
+
+    img.src = m.img;
+
+    imgWrap.appendChild(img);
+    imgWrap.appendChild(dlBtn);
+    bubble.appendChild(imgWrap);
   }
 
   container.appendChild(bubble);
