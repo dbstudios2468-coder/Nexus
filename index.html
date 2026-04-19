@@ -3,34 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Nexus</title>
+<title>Nexus Ultra | Pro Developer Edition</title>
 
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
-
 <meta name="theme-color" content="#050607">
-
 <link rel="manifest" href='data:application/manifest+json,{
   "name": "Nexus Ultra",
   "short_name": "Nexus",
-  "description": "Advanced AI Interface",
   "display": "standalone",
   "start_url": ".",
   "background_color": "#050607",
   "theme_color": "#00ff88",
-  "icons": [
-    {
-      "src": "icon.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "icons": [{"src": "icon.png", "sizes": "192x192", "type": "image/png"}, {"src": "icon.png", "sizes": "512x512", "type": "image/png"}]
 }'>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
 <style>
 /* ========== 1. ADVANCED LIQUID UI ENGINE ========== */
@@ -39,12 +28,10 @@
   --glass-heavy: rgba(255, 255, 255, 0.08); --border: rgba(255, 255, 255, 0.1);
   --text: #ffffff; --text-muted: #888888; --grad-1: #004d33; --grad-2: #002244;
 }
-/* Dark Presets */
 [data-theme="frost"] { --accent: #00d9ff; --grad-1: #002b36; --grad-2: #1a1a2e; }
 [data-theme="ember"] { --accent: #ff4d00; --grad-1: #330d00; --grad-2: #1a0a00; }
 [data-theme="cyber"] { --accent: #ff00ea; --grad-1: #220033; --grad-2: #050505; }
 
-/* Refined Light Theme */
 body.light { 
   --bg: #f8fafc; --glass: rgba(255, 255, 255, 0.7); --glass-heavy: rgba(255, 255, 255, 0.95); 
   --border: rgba(0, 0, 0, 0.1); --text: #0f172a; --text-muted: #64748b; 
@@ -82,6 +69,8 @@ body, html { margin: 0; height: 100dvh; background: var(--bg); color: var(--text
 .content { padding: 15px; display: none; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border); }
 body.light .content { background: rgba(0,0,0,0.03); }
 .instruction-box { width: 100%; background: var(--glass); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 10px; font-size: 0.75rem; resize: none; min-height: 80px; outline: none; }
+.export-btn { background: var(--glass-heavy); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px; font-size: 0.75rem; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
+.export-btn:hover { border-color: var(--accent); color: var(--accent); }
 
 .chat-list { flex: 1; overflow-y: auto; padding: 10px; }
 .chat-item { padding: 12px; border-radius: 12px; cursor: pointer; margin-bottom: 8px; font-size: 0.85rem; background: var(--glass); border: 1px solid transparent; display: flex; justify-content: space-between; align-items: center; }
@@ -102,17 +91,21 @@ body.light header { background: rgba(255,255,255,0.2); }
 .msg-container.me { align-self: flex-end; align-items: flex-end; }
 .msg-container.them { align-self: flex-start; align-items: flex-start; }
 
-/* Standard Msg */
 .msg { padding: 12px 18px; border-radius: 20px; line-height: 1.6; font-size: 0.95rem; word-wrap: break-word; position: relative; }
 .me .msg { background: var(--accent); color: #fff; font-weight: 600; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 .them .msg { background: var(--glass-heavy); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 
-/* Document/Text Mode Msg */
 .msg-container.text-mode { max-width: 100%; width: 100%; align-self: center; }
 .text-mode .msg { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 12px; padding: 25px; width: 100%; font-family: 'Inter', sans-serif; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
 body.light .text-mode .msg { background: rgba(255,255,255,0.6); box-shadow: inset 0 0 20px rgba(255,255,255,0.5); }
 
-/* Expandable Sources block */
+/* User Attached Images */
+.user-attached-img { max-width: 200px; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border); }
+
+/* Script Mode Additions */
+.script-mode .msg { background: rgba(0,255,136,0.05); border: 1px solid var(--accent); padding: 0; overflow: hidden; border-radius: 12px; }
+.script-mode .msg pre { margin: 0; border-radius: 0; }
+
 .sources-wrap { margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; font-size: 0.85rem; }
 .sources-wrap summary { cursor: pointer; color: var(--accent); font-weight: 700; list-style: none; display: flex; align-items: center; gap: 5px; }
 .sources-wrap summary::-webkit-details-marker { display: none; }
@@ -122,12 +115,10 @@ body.light .text-mode .msg { background: rgba(255,255,255,0.6); box-shadow: inse
 .sources-wrap a:hover { text-decoration: underline; }
 .sources-wrap br { display: none; }
 
-/* Meta Info (Timestamps & Action Buttons) */
 .msg-meta { font-size: 0.65rem; color: var(--text-muted); margin-top: 5px; display: flex; gap: 10px; align-items: center; }
 .action-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.75rem; padding: 2px 5px; display: flex; align-items: center; gap: 4px; transition: 0.2s; }
 .action-btn:hover { color: var(--accent); }
 
-/* Quick Prompts */
 .chips-wrap { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: auto; padding-bottom: 20px; }
 .chip { background: var(--glass-heavy); border: 1px solid var(--border); color: var(--text); padding: 8px 15px; border-radius: 100px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
 .chip:hover { border-color: var(--accent); color: var(--accent); }
@@ -144,7 +135,7 @@ body.light .text-mode .msg { background: rgba(255,255,255,0.6); box-shadow: inse
 .overlay-btn:hover { background: var(--accent); color: #000; }
 .msg pre { background: rgba(0,0,0,0.3); padding: 35px 15px 15px; border-radius: 12px; overflow-x: auto; margin: 0; }
 body.light .msg pre { background: rgba(0,0,0,0.05); }
-.msg code { font-family: monospace; }
+.msg code { font-family: 'Consolas', monospace; font-size: 0.85em; }
 p code { background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 6px; font-size: 0.9em; }
 
 @keyframes msgIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
@@ -213,6 +204,7 @@ textarea#input {
     <div class="content" id="settingsContent">
         <label style="font-size: 0.6rem; opacity: 0.6; color: var(--text);">SYSTEM INSTRUCTIONS</label>
         <textarea id="systemPrompt" class="instruction-box" placeholder="Memory instructions..." oninput="updateMemory()"></textarea>
+        
         <div style="margin-top:10px; display:flex; gap:5px; align-items:center;">
             <select id="themeSelect" class="themed-select" onchange="applyTheme(this.value)" style="flex:1;">
                 <option value="default">Forest</option>
@@ -222,6 +214,8 @@ textarea#input {
             </select>
             <button onclick="toggleTheme()" style="background:var(--glass-heavy); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:8px; font-size:0.8rem; cursor:pointer;">☀</button>
         </div>
+        
+        <button class="export-btn" onclick="exportMemory()">💾 Export Memory Backup</button>
         <div id="memNotify" style="font-size: 0.6rem; color: var(--accent); margin-top: 5px; display: none;">Saved.</div>
     </div>
 
@@ -236,7 +230,7 @@ textarea#input {
       </div>
       
       <select id="modelSelect" class="themed-select" style="flex: 1; max-width: 220px;">
-        <option value="multi">Multi-GPT (Default)</option>
+        <option value="multi">Multi-GPT (Vision)</option>
         <option value="llama-3.3-70b-versatile">LLaMA 3.3 (Smart)</option>
         <option value="llama-3.1-8b-instant">LLaMA 3.1 (Fast)</option>
         <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 (Logic)</option>
@@ -254,9 +248,9 @@ textarea#input {
     <footer>
       <div class="word-count" id="wordCount">0 words</div>
       <div class="input-row">
-        <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(this)">
-        <button class="attach-btn" onclick="$('fileInput').click()" title="Attach File">📎</button>
-        <textarea id="input" rows="1" placeholder="Message, /search, /image, /himage, /text..." autocomplete="off"></textarea>
+        <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(this)" accept="image/*,.txt,.json,.csv,.js,.py,.html,.css">
+        <button class="attach-btn" onclick="$('fileInput').click()" title="Attach File/Image">📎</button>
+        <textarea id="input" rows="1" placeholder="Message, /read, /script, /image, /himage..." autocomplete="off"></textarea>
         <button class="circle-btn" onclick="send()">↑</button>
       </div>
     </footer>
@@ -284,7 +278,7 @@ function md(t){
     .replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
         return `<div class="code-wrapper">
                   <button class="overlay-btn" onclick="copyToClipboard(this)">Copy</button>
-                  <pre><code>${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
+                  <pre><code class="language-${lang}">${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
                 </div>`;
     })
     .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
@@ -302,7 +296,16 @@ function copyToClipboard(btn) {
     setTimeout(() => btn.innerText = "Copy", 2000);
 }
 
-// True Download for Images
+function downloadScript(code, ext) {
+    // Strip markdown formatting if the model still accidentally included it
+    const cleanCode = code.replace(/```[a-z]*\n?/g, '').replace(/```/g, '');
+    const blob = new Blob([cleanCode], {type: "text/plain"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "nexus_script_" + Date.now() + ext;
+    a.click();
+}
+
 async function downloadImage(imgUrl, fileName, btn) {
     btn.innerText = "⏳ Downloading...";
     try {
@@ -325,10 +328,11 @@ async function downloadImage(imgUrl, fileName, btn) {
 }
 
 /* ===== 3. STATE & TIMESTAMPS ===== */
-let chats = JSON.parse(localStorage.getItem("nexus_v19_chats")||"[]");
-let active = localStorage.getItem("nexus_v19_active");
+let chats = JSON.parse(localStorage.getItem("nexus_v21_chats")||"[]");
+let active = localStorage.getItem("nexus_v21_active");
 let globalInstructions = localStorage.getItem("nexus_memory") || "";
-let isGeneratingImage = false; // GLOBAL IMAGE LOCK
+let isGeneratingImage = false; 
+let pendingBase64Image = null; // Holds image data for vision requests
 
 if (!chats.length) newChat(true);
 $("systemPrompt").value = globalInstructions;
@@ -351,7 +355,7 @@ function newChat(isInit = false){
 }
 
 function loadChat(id){
-  active = id; localStorage.setItem("nexus_v19_active",id);
+  active = id; localStorage.setItem("nexus_v21_active",id);
   $("view").innerHTML="";
   const chat = chats.find(c=>c.id===id);
   if(chat) {
@@ -379,7 +383,7 @@ function renderList(){
   });
 }
 
-function save(){ localStorage.setItem("nexus_v19_chats",JSON.stringify(chats)); }
+function save(){ localStorage.setItem("nexus_v21_chats",JSON.stringify(chats)); }
 function deleteChat(id){ 
   chats = chats.filter(c=>c.id!==id); save(); renderList(); 
   if(chats.length) loadChat(chats[0].id); else newChat(); 
@@ -392,16 +396,25 @@ function updateMemory() {
     setTimeout(() => { $("memNotify").style.display = "none"; }, 2000);
 }
 
+function exportMemory() {
+    const memoryContent = $("systemPrompt").value || "No system instructions saved.";
+    const blob = new Blob([memoryContent], {type: "text/plain"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "nexus_memory_backup.txt";
+    a.click();
+}
+
 /* ===== 4. QUICK ACTION CHIPS ===== */
 function showChips() {
     const d = document.createElement("div");
     d.className = "chips-wrap";
     d.id = "startupChips";
     const prompts = [
-        "/search Latest AI breakthroughs",
-        "/text Write a formal essay on AI", 
+        "/read https://en.wikipedia.org/wiki/AI Summarize this",
+        "/script python script to scrape a website", 
         "/himage a futuristic neon city",
-        "/image a sleek sports car"
+        "Explain quantum computing"
     ];
     prompts.forEach(p => {
         const btn = document.createElement("button");
@@ -413,7 +426,7 @@ function showChips() {
     $("view").appendChild(d);
 }
 
-/* ===== 5. TEXT DOCUMENT & HUMANIZER LOGIC ===== */
+/* ===== 5. TEXT DOCUMENT EXPORT ===== */
 function exportDocument(textToExport, title) {
     let content = `<html><head><meta charset="utf-8"></head><body>${textToExport.replace(/\n/g, '<br>')}</body></html>`;
     const blob = new Blob(['\ufeff', content], {type: 'application/msword'});
@@ -423,61 +436,51 @@ function exportDocument(textToExport, title) {
     a.click();
 }
 
-function copyDocumentText(btn, textToCopy) {
-    navigator.clipboard.writeText(textToCopy);
-    let old = btn.innerHTML;
-    btn.innerHTML = "✓ Copied";
-    setTimeout(() => btn.innerHTML = old, 2000);
-}
-
-async function humanizeDocument(idx) {
-    const chat = chats.find(c=>c.id===active);
-    const originalText = chat.messages[idx].reply;
-    $("loader").style.display = "flex";
-
+/* ===== 6. AUTO-TITLING ENGINE ===== */
+async function autoTitleChat(chatId, firstPrompt) {
     try {
-        const selectedModel = $("modelSelect").value;
-        const targetModel = selectedModel === "multi" ? "llama-3.3-70b-versatile" : selectedModel;
-        
-        const humanizerPrompt = "You are an undetectable AI text humanizer. Rewrite the following text to completely bypass all AI detection systems (ZeroGPT, Turnitin, etc). Make it sound highly natural, formal, articulate, and completely human-written with high burstiness and varied perplexity. Ensure the tone is professional and academic. Retain all original meaning and formatting. CRITICAL: Output ONLY the rewritten humanized text. Do NOT include conversational filler, greetings, or 'Here is your rewritten text'. Start immediately with the text.";
-
         const res = await fetch("https://hidden-breeze-d81b.minedabstudios.workers.dev/", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
-                model: targetModel,
+                model: "llama-3.1-8b-instant", // Utilizing the fast model for rapid title generation
                 messages: [
-                    {role: "system", content: humanizerPrompt},
-                    {role: "user", content: originalText}
+                    {role: "system", content: "You are an automatic titling bot. Summarize the user's input into exactly 2 or 3 words. Do NOT use quotes, punctuation, or any conversational filler. Only output the 2-3 word title."},
+                    {role: "user", content: firstPrompt}
                 ]
             })
         });
         const data = await res.json();
-        chat.messages[idx].reply = data.reply;
-        save(); loadChat(active);
+        const chat = chats.find(c => c.id === chatId);
+        if (chat && data.reply) {
+            chat.title = data.reply.trim().substring(0, 25);
+            save(); renderList();
+            if (active === chatId) $("header-title").innerText = chat.title.toUpperCase();
+        }
     } catch(e) {
-        alert("Nexus Humanizer failed to connect.");
-    } finally {
-        $("loader").style.display = "none";
+        console.warn("Auto-titling failed.", e);
     }
 }
 
-/* ===== 6. REGENERATE ===== */
+/* ===== 7. REGENERATE ===== */
 function regenerateMsg(idx) {
     const chat = chats.find(c=>c.id===active);
     if(chat.messages[idx].role === "assistant") {
-        let isTextCommand = chat.messages[idx].isTextMode;
-        let isAdviseCommand = chat.messages[idx].isAdviseMode;
-        let isSearchCommand = chat.messages[idx].isSearchMode;
+        let cmds = {
+            isTextCommand: chat.messages[idx].isTextMode,
+            isAdviseCommand: chat.messages[idx].isAdviseMode,
+            isSearchCommand: chat.messages[idx].isSearchMode,
+            isScriptCommand: chat.messages[idx].isScriptMode
+        };
         chat.messages.splice(idx, 1);
         save(); loadChat(active);
-        triggerBackend(chat, isTextCommand, isAdviseCommand, isSearchCommand);
+        triggerBackend(chat, cmds);
     }
 }
 
-/* ===== 7. CORE SEND & FETCH LOGIC ===== */
+/* ===== 8. CORE SEND & FETCH LOGIC ===== */
 async function send(){
-  const rawText = inputArea.value.trim(); if (!rawText) return;
+  let rawText = inputArea.value.trim(); if (!rawText && !pendingBase64Image) return;
   inputArea.value="";
   inputArea.style.height = "auto"; 
   $('wordCount').innerText = "0 words";
@@ -485,35 +488,42 @@ async function send(){
   const chips = $("startupChips"); if(chips) chips.remove();
 
   const chat = chats.find(c=>c.id===active);
-  const user = {role:"user", text: rawText, time: getTime()};
-  chat.messages.push(user);
-  renderMsg(user, chat.messages.length - 1);
-
-  if (chat.messages.length === 1) {
-      chat.title = rawText.replace("/text ", "").replace("/advise ", "").replace("/search ", "").replace("/himage ", "").replace("/image ", "").slice(0, 15);
+  
+  let userMsg = {role:"user", text: rawText, time: getTime()};
+  
+  // Attach base64 image if uploaded
+  if(pendingBase64Image) {
+      userMsg.imageData = pendingBase64Image;
+      pendingBase64Image = null; // Clear queue
   }
 
-  // IMAGE INTERCEPTORS (/image for Fast, /himage for High-Res Flux)
+  chat.messages.push(userMsg);
+  renderMsg(userMsg, chat.messages.length - 1);
+
+  // Trigger auto-title if it's the very first message
+  if (chat.messages.length === 1) {
+      chat.title = "Generating Title...";
+      $("header-title").innerText = chat.title.toUpperCase();
+      autoTitleChat(chat.id, rawText);
+  }
+
+  // COMMAND: IMAGE INTERCEPTORS
   const isImage = rawText.toLowerCase().startsWith("/image ");
   const isHImage = rawText.toLowerCase().startsWith("/himage ");
 
   if(isImage || isHImage){
-    
-    // Check if an image is already generating
     if(isGeneratingImage) {
         const tempMsg = document.createElement("div");
         tempMsg.className = "msg-container them text-mode";
         tempMsg.style.maxWidth = "85%";
-        tempMsg.innerHTML = `<div class="msg" style="color: #ff4d00; border-color: #ff4d00; background: rgba(255, 77, 0, 0.1); padding: 12px;">⏳ Nexus is currently rendering an image. Please wait until it finishes before requesting another one.</div>`;
+        tempMsg.innerHTML = `<div class="msg" style="color: #ff4d00; border-color: #ff4d00; background: rgba(255, 77, 0, 0.1); padding: 12px;">⏳ Nexus is currently rendering an image. Please wait.</div>`;
         $("view").appendChild(tempMsg);
         $("view").scrollTop = $("view").scrollHeight;
-        setTimeout(() => tempMsg.remove(), 4000); // Remove warning after 4 seconds
+        setTimeout(() => tempMsg.remove(), 4000); 
         return;
     }
       
-    // Lock the image engine
     isGeneratingImage = true;
-
     const prefix = isImage ? "/image " : "/himage ";
     const prompt = rawText.substring(prefix.length).trim();
     const cleanPrompt = encodeURIComponent(prompt.replace(/[^a-zA-Z0-9 ]/g, ""));
@@ -524,53 +534,95 @@ async function send(){
     
     const replyText = isHImage ? `Generating High-Res Image: **${prompt}**` : `Generating Fast Image: **${prompt}**`;
 
-    const botMsg = {
-        role: "assistant", 
-        reply: replyText, 
-        img: imgUrl, 
-        time: getTime()
-    };
-    
+    const botMsg = {role: "assistant", reply: replyText, img: imgUrl, time: getTime()};
     chat.messages.push(botMsg);
     renderMsg(botMsg, chat.messages.length - 1);
-    save(); 
-    return;
+    save(); return;
   }
 
-  // COMMAND INTERCEPTORS
-  let isTextCommand = rawText.toLowerCase().startsWith("/text ");
-  let isAdviseCommand = rawText.toLowerCase().startsWith("/advise ");
-  let isSearchCommand = rawText.toLowerCase().startsWith("/search ");
+  // COMMAND: /read (URL SCRAPING)
+  if(rawText.toLowerCase().startsWith("/read ")) {
+      const urlMatch = rawText.match(/https?:\/\/[^\s]+/);
+      if(urlMatch) {
+          const url = urlMatch[0];
+          $("loader").style.display = "flex";
+          try {
+              // Free public CORS proxy to grab webpage text
+              const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+              const resp = await fetch(proxyUrl);
+              const data = await resp.json();
+              
+              // Strip HTML to get pure text
+              const doc = new DOMParser().parseFromString(data.contents, 'text/html');
+              const text = doc.body.textContent || "";
+              
+              // Attach scraped data invisibly to the message for the backend
+              chat.messages[chat.messages.length - 1].hiddenContext = `\n\n[Context Scraped from ${url}]:\n${text.substring(0, 15000)}`;
+          } catch(e) {
+              const err = {role:"assistant", reply:`Could not scrape the URL: ${url}`, time: getTime()};
+              chat.messages.push(err); renderMsg(err, chat.messages.length - 1); save();
+              $("loader").style.display = "none";
+              return;
+          }
+      }
+  }
 
-  triggerBackend(chat, isTextCommand, isAdviseCommand, isSearchCommand);
+  let cmds = {
+      isTextCommand: rawText.toLowerCase().startsWith("/text "),
+      isAdviseCommand: rawText.toLowerCase().startsWith("/advise "),
+      isSearchCommand: rawText.toLowerCase().startsWith("/search "),
+      isScriptCommand: rawText.toLowerCase().startsWith("/script ")
+  };
+
+  triggerBackend(chat, cmds);
 }
 
-async function triggerBackend(chat, isTextCommand = false, isAdviseCommand = false, isSearchCommand = false) {
+async function triggerBackend(chat, cmds) {
   $("loader").style.display = "flex";
   try {
     const selectedModel = $("modelSelect").value;
-    const targetModel = selectedModel === "multi" ? "llama-3.3-70b-versatile" : selectedModel;
+    // Defaulting multi to a vision capable model if possible
+    const targetModel = selectedModel === "multi" ? "llama-3.2-90b-vision-preview" : selectedModel; 
 
     let currentMsgs = chat.messages.map(m => {
-        let content = m.text || m.reply;
+        let contentStr = m.text || m.reply;
         if(m.role === "user") {
-            if(content.toLowerCase().startsWith("/text ")) content = content.substring(6);
-            else if(content.toLowerCase().startsWith("/advise ")) content = content.substring(8);
-            else if(content.toLowerCase().startsWith("/search ")) content = content.substring(8);
+            if(contentStr.toLowerCase().startsWith("/text ")) contentStr = contentStr.substring(6);
+            else if(contentStr.toLowerCase().startsWith("/advise ")) contentStr = contentStr.substring(8);
+            else if(contentStr.toLowerCase().startsWith("/search ")) contentStr = contentStr.substring(8);
+            else if(contentStr.toLowerCase().startsWith("/read ")) contentStr = contentStr.substring(6);
+            else if(contentStr.toLowerCase().startsWith("/script ")) contentStr = contentStr.substring(8);
+            
+            // Append hidden scraped context if it exists
+            if(m.hiddenContext) contentStr += m.hiddenContext;
         }
-        return {role: m.role, content: content};
+
+        // Handle Vision Payload Formatting
+        if(m.role === "user" && m.imageData) {
+            return {
+                role: m.role,
+                content: [
+                    { type: "text", text: contentStr || "Please analyze this image." },
+                    { type: "image_url", image_url: { url: m.imageData } }
+                ]
+            };
+        }
+
+        return {role: m.role, content: contentStr};
     });
 
     let sysPrompt = globalInstructions;
-    if(isTextCommand) {
-        sysPrompt += "\n\nCRITICAL INSTRUCTION: You are generating a formal document. Output ONLY the requested document text. Do NOT include any conversational filler, greetings, or acknowledgments. Start your response immediately with the raw document content.";
-    } else if (isAdviseCommand) {
-        sysPrompt += "\n\nCRITICAL INSTRUCTION: You are acting as a highly analytical financial advisor. Provide expert-level analysis on the requested stock, market trend, or investment strategy. Format your response clearly with bullet points. End your response with a short disclaimer that this is AI-generated analysis and not certified financial advice.";
-    } else if (isSearchCommand) {
-        sysPrompt += "\n\nCRITICAL INSTRUCTION: You are acting as a live web search assistant. Provide the most comprehensive and up-to-date summary of the requested topic. At the absolute end of your response, you MUST include the sources you referenced. Wrap the sources exactly in this HTML structure:\n\n<details class='sources-wrap'><summary>🔗 View Sources</summary><ul><li><a href='URL_HERE' target='_blank'>Source Name</a></li></ul></details>\n\nDo not use standard markdown links for the sources section, use the exact HTML tags provided.";
+    if(cmds.isTextCommand) {
+        sysPrompt += "\n\nCRITICAL INSTRUCTION: You are generating a formal document. Output ONLY the requested document text. Do NOT include any conversational filler.";
+    } else if (cmds.isAdviseCommand) {
+        sysPrompt += "\n\nCRITICAL INSTRUCTION: You are acting as a highly analytical financial advisor. Provide expert-level analysis with bullet points. End your response with a disclaimer.";
+    } else if (cmds.isSearchCommand) {
+        sysPrompt += "\n\nCRITICAL INSTRUCTION: You are acting as a live web search assistant. Include sources wrapped exactly in this HTML structure: <details class='sources-wrap'><summary>🔗 View Sources</summary><ul><li><a href='URL_HERE' target='_blank'>Source Name</a></li></ul></details>";
+    } else if (cmds.isScriptCommand) {
+        sysPrompt += "\n\nCRITICAL INSTRUCTION: You are an expert developer. Output ONLY raw, working code for the requested script. Do NOT wrap the code in markdown blockticks (```). Do NOT include any conversational text, explanations, or greetings. Output raw code only.";
     }
 
-    const res = await fetch("https://hidden-breeze-d81b.minedabstudios.workers.dev/",{
+    const res = await fetch("[https://hidden-breeze-d81b.minedabstudios.workers.dev/](https://hidden-breeze-d81b.minedabstudios.workers.dev/)",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
@@ -582,7 +634,15 @@ async function triggerBackend(chat, isTextCommand = false, isAdviseCommand = fal
       })
     });
     const data = await res.json();
-    const bot = {role:"assistant", reply:data.reply, time: getTime(), isTextMode: isTextCommand, isAdviseMode: isAdviseCommand, isSearchMode: isSearchCommand};
+    const bot = {
+        role: "assistant", 
+        reply: data.reply, 
+        time: getTime(), 
+        isTextMode: cmds.isTextCommand, 
+        isAdviseMode: cmds.isAdviseCommand, 
+        isSearchMode: cmds.isSearchCommand,
+        isScriptMode: cmds.isScriptCommand
+    };
     chat.messages.push(bot);
     save(); renderList(); loadChat(active); 
   } catch(e) { 
@@ -596,16 +656,29 @@ function renderMsg(m, idx){
   const container = document.createElement("div");
   container.className = "msg-container " + (m.role==="user" ? "me" : "them");
   
-  if(m.isTextMode) {
-      container.classList.add("text-mode");
-  }
+  if(m.isTextMode) container.classList.add("text-mode");
+  if(m.isScriptMode) container.classList.add("script-mode");
   
   const bubble = document.createElement("div");
   bubble.className = "msg";
-  bubble.innerHTML = m.role==="user" ? m.text : md(m.reply);
   
-  // Custom Smooth Image Loading Logic with Lock Release
-  if(m.img) {
+  // Script mode handles raw text to avoid markdown parsing breaking the raw code format
+  if(m.isScriptMode && m.role === "assistant") {
+      bubble.innerHTML = `<div class="code-wrapper"><button class="overlay-btn" onclick="copyToClipboard(this)">Copy</button><pre><code class="language-javascript">${m.reply.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre></div>`;
+  } else {
+      bubble.innerHTML = m.role === "user" ? m.text : md(m.reply);
+  }
+
+  // Show user attached image
+  if(m.role === "user" && m.imageData) {
+      const uImg = document.createElement('img');
+      uImg.src = m.imageData;
+      uImg.className = "user-attached-img";
+      bubble.appendChild(uImg);
+  }
+  
+  // Custom Smooth Image Generation Loading Logic
+  if(m.img && m.role === "assistant") {
     const imgWrap = document.createElement('div');
     imgWrap.className = "img-wrapper";
     
@@ -632,13 +705,13 @@ function renderMsg(m, idx){
         img.style.display = "block";       
         dlBtn.style.display = "block";     
         $("view").scrollTop = $("view").scrollHeight; 
-        isGeneratingImage = false; // RELEASE LOCK ON SUCCESS
+        isGeneratingImage = false; 
     };
 
     img.onerror = () => { 
         loadingDiv.style.display = 'none'; 
         imgWrap.innerHTML = `<br><em>[Image generation timed out. <a href="${m.img}" target="_blank" style="color:var(--accent)">Click here to view it directly</a>]</em>`;
-        isGeneratingImage = false; // RELEASE LOCK ON ERROR
+        isGeneratingImage = false; 
     };
 
     img.src = m.img;
@@ -649,6 +722,11 @@ function renderMsg(m, idx){
   }
 
   container.appendChild(bubble);
+
+  // Apply Syntax Highlighting to any code blocks within this container
+  container.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightElement(block);
+  });
 
   // Meta row (Time, Actions)
   const meta = document.createElement("div");
@@ -667,14 +745,16 @@ function renderMsg(m, idx){
           docExportBtn.className = "action-btn"; docExportBtn.innerHTML = "📥 Export to Word";
           docExportBtn.onclick = () => exportDocument(m.reply, chats.find(c=>c.id===active).title);
           meta.appendChild(docExportBtn);
-
-          const humanizeBtn = document.createElement("button");
-          humanizeBtn.className = "action-btn"; humanizeBtn.innerHTML = "🧑‍💻 Humanize";
-          humanizeBtn.onclick = () => { humanizeBtn.innerHTML = "⏳ Humanizing..."; humanizeDocument(idx); };
-          meta.appendChild(humanizeBtn);
       }
 
-      // Add Regenerate if it's the last message
+      if(m.isScriptMode) {
+          const scriptDlBtn = document.createElement("button");
+          scriptDlBtn.className = "action-btn"; scriptDlBtn.innerHTML = "💾 Download Script";
+          scriptDlBtn.onclick = () => downloadScript(m.reply, ".js"); // user can manually rename extension
+          meta.appendChild(scriptDlBtn);
+      }
+
+      // Add Regenerate
       const chat = chats.find(c=>c.id===active);
       if(idx === chat.messages.length - 1) {
           const regenBtn = document.createElement("button");
@@ -692,11 +772,23 @@ function renderMsg(m, idx){
 function handleFileUpload(input) {
   const file = input.files[0]; if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => { 
-      inputArea.value += `\n[File: ${file.name}]\n${e.target.result}\n`; 
-      inputArea.dispatchEvent(new Event('input')); 
-  };
-  reader.readAsText(file);
+  
+  // Vision Integration: Convert image to Base64
+  if(file.type.startsWith('image/')) {
+      reader.onload = e => { 
+          pendingBase64Image = e.target.result;
+          inputArea.value += `[Attached Image: ${file.name}] `; 
+          inputArea.dispatchEvent(new Event('input')); 
+      };
+      reader.readAsDataURL(file);
+  } else {
+      // Standard Text file attachment
+      reader.onload = e => { 
+          inputArea.value += `\n[File: ${file.name}]\n${e.target.result}\n`; 
+          inputArea.dispatchEvent(new Event('input')); 
+      };
+      reader.readAsText(file);
+  }
 }
 
 /* ===== UI TOGGLES & TOUCH EVENTS ===== */
