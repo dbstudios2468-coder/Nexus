@@ -292,9 +292,14 @@ textarea#input { flex: 1; background: none; border: none; outline: none; color: 
 <script>
 const $ = id => document.getElementById(id);
 
-const w_host = "https://hidden-breeze-d81b";
+// Shattering the URLs to prevent markdown auto-linking corruption
+const w_p1 = "https://";
+const w_p2 = "hidden-breeze-d81b";
 const w_sub = ".minedabstudios.workers.dev/";
-const WORKER_URL = w_host + w_sub;
+const WORKER_URL = w_p1 + w_p2 + w_sub;
+
+const img_p1 = "https://";
+const img_p2 = "image.pollinations.ai";
 
 const inputArea = $('input');
 inputArea.addEventListener('input', function() {
@@ -334,7 +339,6 @@ function copyToClipboard(btn) {
     setTimeout(() => btn.innerText = "Copy", 2000);
 }
 
-// Global copy function for the bypass button
 function copyTextToClipboard(text) {
     const textarea = document.createElement("textarea");
     textarea.value = text;
@@ -374,8 +378,8 @@ async function downloadImage(imgUrl, fileName, btn) {
     }
 }
 
-let chats = JSON.parse(localStorage.getItem("nexus_vfinal24_chats")||"[]");
-let active = localStorage.getItem("nexus_vfinal24_active");
+let chats = JSON.parse(localStorage.getItem("nexus_vfinal27_chats")||"[]");
+let active = localStorage.getItem("nexus_vfinal27_active");
 let globalInstructions = localStorage.getItem("nexus_memory") || "";
 let currentFlow = localStorage.getItem("nx_flow") || "raw";
 let currentSpeed = localStorage.getItem("nx_speed") || "80";
@@ -409,7 +413,7 @@ function newChat(isInit = false){
 }
 
 function loadChat(id){
-  active = id; localStorage.setItem("nexus_vfinal24_active",id);
+  active = id; localStorage.setItem("nexus_vfinal27_active",id);
   $("view").innerHTML="";
   const chat = chats.find(c=>c.id===id);
   if(chat) {
@@ -448,7 +452,7 @@ function filterChats() {
 
 function renderList(){ filterChats(); }
 
-function save(){ localStorage.setItem("nexus_vfinal24_chats",JSON.stringify(chats)); }
+function save(){ localStorage.setItem("nexus_vfinal27_chats",JSON.stringify(chats)); }
 function deleteChat(id, event){ 
   event.stopPropagation();
   chats = chats.filter(c=>c.id!==id); save(); renderList(); 
@@ -682,7 +686,7 @@ async function send(){
     const cleanPrompt = encodeURIComponent(prompt.replace(/[^a-zA-Z0-9 ]/g, ""));
     const randomSeed = Math.floor(Math.random() * 1000000);
     
-    let imgUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?width=1024&height=1024&seed=${randomSeed}&nologo=true`;
+    let imgUrl = img_p1 + img_p2 + "/prompt/" + cleanPrompt + "?width=1024&height=1024&seed=" + randomSeed + "&nologo=true";
     if(isHImage) imgUrl += `&model=flux`; 
     
     const replyText = isHImage ? `Generating High-Res Image: **${prompt}**` : `Generating Fast Image: **${prompt}**`;
@@ -917,7 +921,6 @@ function renderMsg(m, idx, shouldStream = false) {
           docExportBtn.onclick = () => exportDocument(m.reply, chats.find(c=>c.id===active).title);
           meta.appendChild(docExportBtn);
 
-          // 🧑‍💻 THE LOCAL FEW-SHOT CLONE
           const humanizeBtn = document.createElement("button");
           humanizeBtn.className = "action-btn"; humanizeBtn.innerHTML = "🧑‍💻 Humanize (Local)";
           humanizeBtn.onclick = () => { 
@@ -925,21 +928,18 @@ function renderMsg(m, idx, shouldStream = false) {
           };
           meta.appendChild(humanizeBtn);
           
-          // ✨ THE EXTERNAL ESSAYHUMANIZER LINK (Fixed Absolute Routing)
+          // Using a safely constructed URL for the external link
           const premiumBtn = document.createElement("button");
           premiumBtn.className = "action-btn premium"; 
           premiumBtn.innerHTML = "✨ 100% Bypass";
+          
+          const h_link1 = "https://";
+          const h_link2 = "cleverhumanizer.ai";
+          const h_link3 = "";
+          
           premiumBtn.onclick = () => { 
               copyTextToClipboard(m.reply);
-              
-              // Force the browser to evaluate it as an absolute web URL, not a local file path
-              const link = document.createElement('a');
-              link.href = '[https://essayhumanizer.io/bypass-ai-detector/grubby-ai](https://essayhumanizer.io/bypass-ai-detector/grubby-ai)';
-              link.target = '_blank';
-              link.rel = 'noopener noreferrer';
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
+              window.open(h_link1 + h_link2 + h_link3, "_blank", "noopener,noreferrer"); 
               
               const originalText = premiumBtn.innerHTML;
               premiumBtn.innerHTML = "Copied! Opening...";
