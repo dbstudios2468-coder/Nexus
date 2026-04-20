@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Nexus Pro</title>
+<title>Nexus Ultra | Pro Edition</title>
 
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -292,7 +292,7 @@ textarea#input { flex: 1; background: none; border: none; outline: none; color: 
 <script>
 const $ = id => document.getElementById(id);
 
-// Shattering the URLs to prevent markdown auto-linking corruption
+// Shattering URLs to prevent markdown auto-linking corruption
 const w_p1 = "https://";
 const w_p2 = "hidden-breeze-d81b";
 const w_sub = ".minedabstudios.workers.dev/";
@@ -339,15 +339,6 @@ function copyToClipboard(btn) {
     setTimeout(() => btn.innerText = "Copy", 2000);
 }
 
-function copyTextToClipboard(text) {
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand("copy");
-    document.body.removeChild(textarea);
-}
-
 function downloadScript(code, ext) {
     const cleanCode = code.replace(/```[a-z]*\n?/g, '').replace(/```/g, '');
     const blob = new Blob([cleanCode], {type: "text/plain"});
@@ -378,8 +369,9 @@ async function downloadImage(imgUrl, fileName, btn) {
     }
 }
 
-let chats = JSON.parse(localStorage.getItem("nexus_vfinal27_chats")||"[]");
-let active = localStorage.getItem("nexus_vfinal27_active");
+// Ensure clean separation for local storage versioning
+let chats = JSON.parse(localStorage.getItem("nexus_vfinal28_chats")||"[]");
+let active = localStorage.getItem("nexus_vfinal28_active");
 let globalInstructions = localStorage.getItem("nexus_memory") || "";
 let currentFlow = localStorage.getItem("nx_flow") || "raw";
 let currentSpeed = localStorage.getItem("nx_speed") || "80";
@@ -413,7 +405,7 @@ function newChat(isInit = false){
 }
 
 function loadChat(id){
-  active = id; localStorage.setItem("nexus_vfinal27_active",id);
+  active = id; localStorage.setItem("nexus_vfinal28_active",id);
   $("view").innerHTML="";
   const chat = chats.find(c=>c.id===id);
   if(chat) {
@@ -452,7 +444,7 @@ function filterChats() {
 
 function renderList(){ filterChats(); }
 
-function save(){ localStorage.setItem("nexus_vfinal27_chats",JSON.stringify(chats)); }
+function save(){ localStorage.setItem("nexus_vfinal28_chats",JSON.stringify(chats)); }
 function deleteChat(id, event){ 
   event.stopPropagation();
   chats = chats.filter(c=>c.id!==id); save(); renderList(); 
@@ -928,21 +920,37 @@ function renderMsg(m, idx, shouldStream = false) {
           };
           meta.appendChild(humanizeBtn);
           
-          // Using a safely constructed URL for the external link
+          // ✨ THE CLEVERHUMANIZER BUTTON (Now Auto-Copies)
           const premiumBtn = document.createElement("button");
           premiumBtn.className = "action-btn premium"; 
           premiumBtn.innerHTML = "✨ 100% Bypass";
           
           const h_link1 = "https://";
-          const h_link2 = "cleverhumanizer.ai";
-          const h_link3 = "";
+          const h_link2 = "cleverhumanizer";
+          const h_link3 = ".ai/";
           
           premiumBtn.onclick = () => { 
-              copyTextToClipboard(m.reply);
+              // 1. Format the text nicely so it preserves paragraphs
+              const formattedText = m.reply.replace(/\r?\n/g, "\r\n");
+              
+              // 2. Try the modern clipboard API, fallback to text area hack if browser blocks it
+              if (navigator.clipboard && window.isSecureContext) {
+                  navigator.clipboard.writeText(formattedText);
+              } else {
+                  const textarea = document.createElement("textarea");
+                  textarea.value = formattedText;
+                  document.body.appendChild(textarea);
+                  textarea.select();
+                  document.execCommand("copy");
+                  document.body.removeChild(textarea);
+              }
+              
+              // 3. Open CleverHumanizer 
               window.open(h_link1 + h_link2 + h_link3, "_blank", "noopener,noreferrer"); 
               
+              // 4. Update the button text to show it worked!
               const originalText = premiumBtn.innerHTML;
-              premiumBtn.innerHTML = "Copied! Opening...";
+              premiumBtn.innerHTML = "✓ Copied! Opening...";
               setTimeout(() => premiumBtn.innerHTML = originalText, 2500);
           };
           meta.appendChild(premiumBtn);
