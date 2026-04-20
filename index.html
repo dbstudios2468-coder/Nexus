@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Nexus Ultra | Final Edition</title>
+<title>Nexus Pro</title>
 
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -18,39 +18,31 @@
   "start_url": ".",
   "background_color": "#050607",
   "theme_color": "#00ff88",
-  "icons": [
-    {
-      "src": "icon.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "icons": [{"src": "icon.png", "sizes": "192x192", "type": "image/png"}, {"src": "icon.png", "sizes": "512x512", "type": "image/png"}]
 }'>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
 <style>
-/* ========== 1. ADVANCED LIQUID UI ENGINE ========== */
+/* ========== 1. NEXUS DESIGN SYSTEM 2.0 ========== */
 :root {
-  --accent: #00ff88; --bg: #050607; --glass: rgba(255, 255, 255, 0.03);
-  --glass-heavy: rgba(255, 255, 255, 0.08); --border: rgba(255, 255, 255, 0.1);
-  --text: #ffffff; --text-muted: #888888; --grad-1: #004d33; --grad-2: #002244;
+  --accent: #00ff88; --bg: #050607; 
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-heavy: rgba(255, 255, 255, 0.08); 
+  --border: rgba(255, 255, 255, 0.1);
+  --text: #f0f0f0; --text-muted: #a0a0a0; 
+  --grad-1: #004d33; --grad-2: #002244;
+  --radius: 18px;
 }
-/* Dark Presets */
+
 [data-theme="frost"] { --accent: #00d9ff; --grad-1: #002b36; --grad-2: #1a1a2e; }
 [data-theme="ember"] { --accent: #ff4d00; --grad-1: #330d00; --grad-2: #1a0a00; }
 [data-theme="cyber"] { --accent: #ff00ea; --grad-1: #220033; --grad-2: #050505; }
 
-/* Refined Light Theme */
 body.light { 
-  --bg: #f8fafc; --glass: rgba(255, 255, 255, 0.7); --glass-heavy: rgba(255, 255, 255, 0.95); 
-  --border: rgba(0, 0, 0, 0.1); --text: #0f172a; --text-muted: #64748b; 
+  --bg: #f8fafc; --glass: rgba(255, 255, 255, 0.6); --glass-heavy: rgba(255, 255, 255, 0.9); 
+  --border: rgba(0, 0, 0, 0.08); --text: #1e293b; --text-muted: #64748b; 
   --grad-1: #e2e8f0; --grad-2: #cbd5e1; 
 }
 body.light[data-theme="default"] { --accent: #10b981; --grad-1: #d1fae5; --grad-2: #a7f3d0; }
@@ -58,121 +50,126 @@ body.light[data-theme="frost"] { --accent: #0284c7; --grad-1: #e0f2fe; --grad-2:
 body.light[data-theme="ember"] { --accent: #ea580c; --grad-1: #ffedd5; --grad-2: #fed7aa; }
 body.light[data-theme="cyber"] { --accent: #db2777; --grad-1: #fce7f3; --grad-2: #fbcfe8; }
 
-* { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; transition: background 0.3s, border 0.3s, color 0.3s; }
+* { box-sizing: border-box; font-family: 'Inter', -apple-system, system-ui, sans-serif; transition: background 0.3s, border 0.3s, color 0.3s; }
 body, html { margin: 0; height: 100dvh; background: var(--bg); color: var(--text); overflow: hidden; position: fixed; width: 100%; }
 
-#liquid-bg { position: fixed; inset: -10%; z-index: -1; background-image: radial-gradient(circle at 20% 30%, var(--grad-1), transparent 40%), radial-gradient(circle at 80% 70%, var(--grad-2), transparent 50%); filter: blur(60px); animation: drift 20s infinite alternate ease-in-out; }
-@keyframes drift { from { transform: scale(1); } to { transform: scale(1.1); } }
+#liquid-bg { position: fixed; inset: -10%; z-index: -1; background-image: radial-gradient(circle at 10% 20%, var(--grad-1), transparent 40%), radial-gradient(circle at 90% 80%, var(--grad-2), transparent 50%); filter: blur(70px); animation: drift 15s infinite alternate ease-in-out; }
+@keyframes drift { from { transform: scale(1) rotate(0deg); } to { transform: scale(1.1) rotate(2deg); } }
 
-.app { display: flex; height: 100dvh; padding: 10px; gap: 10px; backdrop-filter: blur(15px); }
+.app { display: flex; height: 100dvh; padding: 12px; gap: 12px; backdrop-filter: blur(20px); }
 
-/* ========== 2. SIDEBAR ========== */
+/* ========== 2. SIDEBAR PRO ========== */
 .sidebar { 
-  width: 300px; background: var(--glass); backdrop-filter: blur(40px); border-radius: 24px; border: 1px solid var(--border); 
-  display: flex; flex-direction: column; z-index: 1000; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s, opacity 0.4s; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  width: 280px; background: var(--glass); backdrop-filter: blur(50px); border-radius: 24px; border: 1px solid var(--border); 
+  display: flex; flex-direction: column; z-index: 1000; overflow: hidden; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s, opacity 0.4s;
 }
 .sidebar.collapsed { width: 0; padding: 0; margin: 0; border: none; opacity: 0; pointer-events: none; }
-@media (max-width: 768px) {
-  .sidebar { position: fixed; left: 10px; top: 10px; bottom: 10px; transform: translateX(-115%); width: 280px; opacity: 1; }
-  .sidebar.open { transform: translateX(0); width: 280px; opacity: 1; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-  .sidebar.collapsed { transform: translateX(-115%); width: 280px; opacity: 1; }
-}
 
-.sidebar-header { padding: 25px; font-weight: 900; color: var(--accent); letter-spacing: 2px; }
-.themed-select { background: var(--glass-heavy); color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px; font-size: 0.75rem; cursor: pointer; outline: none; }
-.themed-select option { background: var(--bg); color: var(--text); }
-.collapsible { background: var(--glass-heavy); border: none; color: var(--accent); cursor: pointer; padding: 12px 20px; width: 100%; text-align: left; font-size: 0.8rem; font-weight: 800; border-top: 1px solid var(--border); }
+.sidebar-header { padding: 30px 20px 10px; font-weight: 900; color: var(--accent); letter-spacing: 4px; text-align: center; font-size: 1.2rem; text-shadow: 0 0 15px var(--accent); }
+
+.collapsible { background: var(--glass-heavy); border: none; color: var(--accent); cursor: pointer; padding: 12px 20px; width: 100%; text-align: left; font-size: 0.8rem; font-weight: 800; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .content { padding: 15px; display: none; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border); }
 body.light .content { background: rgba(0,0,0,0.03); }
 .instruction-box { width: 100%; background: var(--glass); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 10px; font-size: 0.75rem; resize: none; min-height: 80px; outline: none; }
 
+.themed-select { background: var(--glass-heavy); color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 6px; font-size: 0.75rem; cursor: pointer; outline: none; }
+.themed-select option { background: var(--bg); color: var(--text); }
 .export-btn { background: var(--glass-heavy); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 6px; font-size: 0.7rem; cursor: pointer; width: 100%; margin-top: 5px; transition: 0.2s; }
 .export-btn:hover { border-color: var(--accent); color: var(--accent); }
 
 .chat-list { flex: 1; overflow-y: auto; padding: 10px; }
-.chat-item { padding: 12px; border-radius: 12px; cursor: pointer; margin-bottom: 8px; font-size: 0.85rem; background: var(--glass); border: 1px solid transparent; display: flex; justify-content: space-between; align-items: center; }
-.chat-item.active { border-color: var(--accent); background: var(--glass-heavy); color: var(--accent); font-weight: 600; }
-.del-btn { background: none; border: none; color: inherit; opacity: 0.3; cursor: pointer; font-size: 1.2rem; }
-.new-chat { margin: 15px; padding: 12px; background: var(--accent); color: #fff; border-radius: 14px; text-align: center; font-weight: 800; cursor: pointer; }
-body.light .new-chat { color: #fff; }
+.chat-item { 
+  padding: 14px; border-radius: var(--radius); cursor: pointer; margin-bottom: 8px; font-size: 0.85rem; 
+  background: transparent; border: 1px solid transparent; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
+}
+.chat-item:hover { background: var(--glass); }
+.chat-item.active { border-color: var(--accent); background: var(--glass-heavy); color: var(--accent); font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.del-btn { opacity: 0; font-size: 1.1rem; color: #ff4444; border: none; background: none; cursor: pointer; transition: 0.2s; }
+.chat-item:hover .del-btn { opacity: 1; }
 
-/* ========== 3. MAIN APP AREA ========== */
-.main { flex: 1; background: var(--glass); backdrop-filter: blur(40px); border-radius: 24px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-header { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.05); gap: 10px; }
+.new-chat { margin: 15px; padding: 14px; background: var(--accent); color: #000; border-radius: var(--radius); text-align: center; font-weight: 800; cursor: pointer; box-shadow: 0 5px 20px rgba(0,255,136,0.3); transition: 0.2s; }
+.new-chat:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,255,136,0.4); }
+
+/* ========== 3. MAIN AREA PRO ========== */
+.main { flex: 1; background: var(--glass); backdrop-filter: blur(50px); border-radius: 28px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+
+header { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.1); }
 body.light header { background: rgba(255,255,255,0.2); }
-.header-btn { background: var(--glass-heavy); border: 1px solid var(--border); border-radius: 10px; color: var(--accent); padding: 5px 12px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 5px; }
 
-/* ========== 4. CHAT VIEW & BUBBLES ========== */
-#view { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
-.msg-container { display: flex; flex-direction: column; max-width: 85%; animation: msgIn .2s ease-out; }
+.header-btn { background: var(--glass-heavy); border: 1px solid var(--border); border-radius: 12px; color: var(--text); padding: 8px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.header-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+#view { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 25px; scroll-behavior: smooth; }
+
+#view::-webkit-scrollbar, .chat-list::-webkit-scrollbar { width: 5px; }
+#view::-webkit-scrollbar-thumb, .chat-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+/* ========== 4. CHAT BUBBLES 2.0 ========== */
+.msg-container { display: flex; flex-direction: column; max-width: 85%; animation: msgIn 0.3s ease-out; }
 .msg-container.me { align-self: flex-end; align-items: flex-end; }
 .msg-container.them { align-self: flex-start; align-items: flex-start; }
 
-/* Standard Msg - UPDATED WRAPPING RULES TO MATCH MS WORD */
-.msg { padding: 12px 18px; border-radius: 20px; line-height: 1.6; font-size: 0.95rem; overflow-wrap: break-word; word-break: normal; hyphens: none; position: relative; }
-.me .msg { background: var(--accent); color: #fff; font-weight: 600; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.msg { padding: 16px 22px; border-radius: 22px; line-height: 1.7; font-size: 0.98rem; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow-wrap: break-word; word-break: normal; hyphens: none; }
+.me .msg { background: linear-gradient(135deg, var(--accent), #00cc6e); color: #000; font-weight: 500; border-bottom-right-radius: 4px; }
 .them .msg { background: var(--glass-heavy); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 
-/* Document/Text Mode Msg */
 .msg-container.text-mode { max-width: 100%; width: 100%; align-self: center; }
 .text-mode .msg { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 12px; padding: 25px; width: 100%; font-family: 'Inter', sans-serif; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
 body.light .text-mode .msg { background: rgba(255,255,255,0.6); box-shadow: inset 0 0 20px rgba(255,255,255,0.5); }
 
-/* Script Mode Additions */
 .script-mode .msg { background: rgba(0,255,136,0.05); border: 1px solid var(--accent); padding: 0; overflow: hidden; border-radius: 12px; }
 .script-mode .msg pre { margin: 0; border-radius: 0; }
 
-/* Meta Info (Timestamps & Action Buttons) */
-.msg-meta { font-size: 0.65rem; color: var(--text-muted); margin-top: 5px; display: flex; gap: 10px; align-items: center; }
-.action-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.75rem; padding: 2px 5px; display: flex; align-items: center; gap: 4px; transition: 0.2s; }
-.action-btn:hover { color: var(--accent); }
+.img-wrapper { position: relative; margin-top: 10px; display: inline-block; max-width: 100%; width: 100%; min-width: 250px; }
+.ai-img { width: 100%; max-width: 512px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: block; transition: opacity 0.3s ease; }
+.img-loading { padding: 50px 20px; text-align: center; background: var(--glass-heavy); border-radius: 12px; border: 1px dashed var(--accent); color: var(--accent); font-weight: 600; font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 15px; max-width: 512px; }
 
-/* Quick Prompts */
+.msg strong { font-weight: 800; }
+.msg blockquote { border-left: 3px solid var(--accent); margin: 10px 0; padding-left: 10px; opacity: 0.8; }
+
+.code-wrapper { background: #0d1117; border-radius: 14px; margin: 15px 0; overflow: hidden; border: 1px solid var(--border); }
+body.light .code-wrapper { background: rgba(0,0,0,0.03); }
+.code-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; background: rgba(255,255,255,0.05); border-bottom: 1px solid var(--border); font-size: 0.7rem; color: var(--text-muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+body.light .code-header { background: rgba(0,0,0,0.05); }
+.copy-btn { background: var(--glass-heavy); border: 1px solid var(--border); color: var(--accent); border-radius: 6px; padding: 4px 12px; cursor: pointer; transition: 0.2s; }
+.copy-btn:hover { background: var(--accent); color: #000; }
+.msg pre { margin: 0; padding: 18px; overflow-x: auto; background: transparent; border-radius: 0 0 12px 12px; }
+body.light .msg pre { background: transparent; }
+.msg code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.85em; }
+p code { background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 6px; font-size: 0.9em; }
+
+.msg-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 8px; display: flex; gap: 12px; opacity: 0.6; transition: 0.2s; flex-wrap: wrap; }
+.msg-meta:hover { opacity: 1; }
+.action-btn { background: var(--glass); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 5px 12px; cursor: pointer; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px; transition: 0.2s; }
+.action-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--glass-heavy); }
+.action-btn.premium { border-color: rgba(255, 0, 234, 0.5); color: #ff00ea; }
+.action-btn.premium:hover { background: rgba(255, 0, 234, 0.1); border-color: #ff00ea; }
+
 .chips-wrap { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: auto; padding-bottom: 20px; }
 .chip { background: var(--glass-heavy); border: 1px solid var(--border); color: var(--text); padding: 8px 15px; border-radius: 100px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
 .chip:hover { border-color: var(--accent); color: var(--accent); }
 
-/* Images & Markdown */
-.img-wrapper { position: relative; margin-top: 10px; display: inline-block; max-width: 100%; }
-.ai-img { width: 100%; max-width: 512px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: block; }
-.msg strong { font-weight: 800; }
-.msg blockquote { border-left: 3px solid var(--accent); margin: 10px 0; padding-left: 10px; opacity: 0.8; }
-
-/* Enhanced Code UI */
-.code-wrapper { background: rgba(0,0,0,0.4); border-radius: 12px; margin: 10px 0; overflow: hidden; border: 1px solid var(--border); }
-body.light .code-wrapper { background: rgba(0,0,0,0.03); }
-.code-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; background: rgba(255,255,255,0.05); border-bottom: 1px solid var(--border); font-size: 0.75rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
-body.light .code-header { background: rgba(0,0,0,0.05); }
-.copy-btn { background: var(--glass-heavy); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 0.7rem; transition: 0.2s; }
-.copy-btn:hover { background: var(--accent); color: #000; }
-.msg pre { margin: 0; padding: 15px; background: transparent; border-radius: 0 0 12px 12px; overflow-x: auto; }
-body.light .msg pre { background: transparent; }
-.msg code { font-family: monospace; }
-p code { background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 6px; font-size: 0.9em; }
-
-/* Typing Cursor & Fading Effects */
-.typing-cursor { display: inline-block; width: 6px; height: 14px; background: var(--accent); margin-left: 4px; vertical-align: middle; animation: blink 1s step-end infinite; }
+.typing-cursor { display: inline-block; width: 6px; height: 15px; background: var(--accent); margin-left: 5px; vertical-align: middle; animation: blink 0.8s step-end infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
 .fade-text { animation: textFade 0.2s ease-in forwards; opacity: 0; }
 @keyframes textFade { to { opacity: 1; } }
 
-@keyframes msgIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+@keyframes msgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .loader-wrap { display: flex; align-items: center; gap: 6px; padding: 10px 25px; display: none; }
 .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 1.5s infinite; }
 @keyframes pulse { 0%, 100% { transform: scale(0.6); opacity: 0.3; } 50% { transform: scale(1.2); opacity: 1; } }
 
 /* ========== 5. FOOTER & INPUT ========== */
-footer { padding: 15px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; }
-.word-count { font-size: 0.65rem; color: var(--text-muted); text-align: right; padding-right: 15px; }
-.input-row { display: flex; gap: 8px; background: var(--glass-heavy); padding: 8px 10px 8px 15px; border-radius: 24px; border: 1px solid var(--border); align-items: flex-end; }
+footer { padding: 20px 30px 30px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; }
+.word-count { font-size: 0.65rem; color: var(--text-muted); text-align: right; padding-right: 15px; opacity:0.6; }
+.input-row { display: flex; gap: 12px; background: var(--glass-heavy); padding: 10px 10px 10px 20px; border-radius: 30px; border: 1px solid var(--border); align-items: flex-end; box-shadow: 0 10px 40px rgba(0,0,0,0.3); transition: 0.3s; }
+.input-row:focus-within { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,255,136,0.15); }
 
-textarea#input { 
-  flex: 1; background: none; border: none; outline: none; color: inherit; font-size: 1rem; 
-  resize: none; min-height: 24px; max-height: 150px; overflow-y: auto; padding: 2px 0; margin-bottom: 4px; line-height: 1.4;
-}
-.circle-btn { background: var(--accent); color: #fff; border-radius: 50%; width: 36px; height: 36px; border: none; cursor: pointer; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.attach-btn { background: transparent; border: none; color: var(--text-muted); opacity: 0.6; cursor: pointer; font-size: 1.2rem; padding: 0 5px; margin-bottom: 4px; transition: 0.2s; }
+textarea#input { flex: 1; background: none; border: none; outline: none; color: inherit; font-size: 1rem; resize: none; min-height: 24px; max-height: 200px; overflow-y: auto; padding: 8px 0; margin-bottom: 2px; line-height: 1.5; }
+.circle-btn { background: var(--accent); color: #000; border-radius: 50%; width: 42px; height: 42px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 4px 15px rgba(0,255,136,0.3); transition: 0.2s; }
+.circle-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,255,136,0.5); }
+.attach-btn { background: transparent; border: none; color: var(--text-muted); opacity: 0.6; cursor: pointer; font-size: 1.5rem; padding: 0 5px; margin-bottom: 6px; transition: 0.2s; }
 .attach-btn:hover { opacity: 1; color: var(--accent); }
 
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 950; backdrop-filter: blur(5px); }
@@ -181,32 +178,20 @@ textarea#input {
 /* ========== 6. MOBILE RESPONSIVE OVERRIDES ========== */
 @media (max-width: 768px) {
   .app { padding: 0; gap: 0; }
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); width: 85%; max-width: 320px; border-radius: 0 24px 24px 0; }
+  .sidebar.open { transform: translateX(0); box-shadow: 0 0 100px rgba(0,0,0,0.8); }
   .main { border-radius: 0; border: none; }
-  .sidebar { 
-      position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); 
-      width: 85%; max-width: 320px; border-radius: 0 24px 24px 0; 
-      border-left: none; border-top: none; border-bottom: none; opacity: 1;
-  }
-  .sidebar.open { transform: translateX(0); box-shadow: 0 0 50px rgba(0,0,0,0.8); }
-  .sidebar.collapsed { transform: translateX(-100%); }
-  
   header { padding: 10px; }
   .header-btn { padding: 5px 10px; font-size: 1.1rem; }
   #modelSelect { max-width: 140px; font-size: 0.7rem; padding: 6px 4px; }
-  #header-title { display: none; } 
-  
   #view { padding: 15px 10px; gap: 15px; }
   .msg-container { max-width: 95%; }
-  .msg { padding: 10px 14px; font-size: 0.9rem; }
-  .text-mode .msg { padding: 15px; }
-  
-  footer { padding: 10px; }
+  .msg { padding: 12px 16px; font-size: 0.9rem; }
+  footer { padding: 10px 15px 15px; }
   .input-row { padding: 6px 8px 6px 12px; }
   textarea#input { font-size: 0.95rem; }
-  .circle-btn, .attach-btn { width: 34px; height: 34px; margin-bottom: 2px; }
-  
-  .chips-wrap { gap: 6px; }
-  .chip { font-size: 0.75rem; padding: 6px 12px; }
+  .circle-btn { width: 36px; height: 36px; margin-bottom: 2px; font-size: 1rem;}
+  .attach-btn { font-size: 1.3rem; margin-bottom: 4px; }
 }
 </style>
 </head>
@@ -229,6 +214,12 @@ textarea#input {
             <button class="export-btn" onclick="$('memoryImport').click()">Import Mem</button>
             <input type="file" id="memoryImport" style="display:none" onchange="importMemory(this)" accept=".txt">
         </div>
+
+        <label style="font-size: 0.6rem; opacity: 0.6; color: var(--text); display: block; margin-top: 15px;">AI ENGINE</label>
+        <label style="display:flex; align-items:center; gap:8px; font-size:0.8rem; margin-top:5px; cursor:pointer;">
+            <input type="checkbox" id="intelToggle" onchange="toggleIntel(this.checked)" style="accent-color:var(--accent); width: 16px; height: 16px;">
+            Enable Deep Reasoning (CoT)
+        </label>
 
         <label style="font-size: 0.6rem; opacity: 0.6; color: var(--text); display: block; margin-top: 15px;">OUTPUT FLOW</label>
         <select id="flowSelect" class="themed-select" onchange="applyFlow(this.value)" style="width: 100%; margin-top: 5px;">
@@ -256,6 +247,10 @@ textarea#input {
         <div id="memNotify" style="font-size: 0.6rem; color: var(--accent); margin-top: 5px; display: none;">Saved.</div>
     </div>
 
+    <div style="padding: 10px 15px 5px;">
+        <input type="text" id="searchChats" class="instruction-box" style="min-height: 35px; height: 35px; padding: 5px 12px; border-radius: 12px; margin-top: 0; font-size: 0.8rem;" placeholder="🔍 Search transmissions..." oninput="filterChats()">
+    </div>
+
     <div class="chat-list" id="chatList"></div>
     <div class="new-chat" onclick="newChat()">＋ New Transmission</div>
   </aside>
@@ -263,17 +258,17 @@ textarea#input {
   <main class="main">
     <header>
       <div style="display:flex; align-items:center; gap:8px; flex-shrink: 0;">
-        <button class="header-btn" onclick="handleSidebarToggle()">☰</button>
+        <button class="header-btn" onclick="toggleSidebar()">☰</button>
       </div>
       
-      <select id="modelSelect" class="themed-select" style="flex: 1; max-width: 220px;">
-        <option value="multi">Multi-GPT (Default)</option>
-        <option value="llama-3.3-70b-versatile">LLaMA 3.3 (Smart)</option>
-        <option value="llama-3.1-8b-instant">LLaMA 3.1 (Fast)</option>
-        <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 (Logic)</option>
+      <select id="modelSelect" class="themed-select" style="flex: 1; max-width: 220px; background:none; border:none; color:var(--accent); font-weight:800; font-size: 0.85rem;">
+        <option value="multi">MULTI-GPT (Default)</option>
+        <option value="llama-3.3-70b-versatile">LLAMA 3.3 (Smart)</option>
+        <option value="llama-3.1-8b-instant">LLAMA 3.1 (Fast)</option>
+        <option value="qwen/qwen-2.5-72b-instruct:free">QWEN 2.5 (Logic)</option>
       </select>
 
-      <span id="header-title" style="font-weight:800; color:var(--accent); font-size:0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px;">READY_</span>
+      <span id="header-title" style="font-weight:800; color:var(--accent); font-size:0.7rem; opacity: 0.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px;">READY_</span>
     </header>
 
     <div id="view"></div>
@@ -287,7 +282,7 @@ textarea#input {
       <div class="input-row">
         <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(this)">
         <button class="attach-btn" onclick="$('fileInput').click()" title="Attach File">📎</button>
-        <textarea id="input" rows="1" placeholder="Message, /script, /image, /himage, /text..." autocomplete="off"></textarea>
+        <textarea id="input" rows="1" placeholder="Message Nexus... (/script, /image, /himage, /text)" autocomplete="off"></textarea>
         <button class="circle-btn" onclick="send()">↑</button>
       </div>
     </footer>
@@ -297,12 +292,10 @@ textarea#input {
 <script>
 const $ = id => document.getElementById(id);
 
-/* ===== THE URL VARIABLES - IMMUNE TO MARKDOWN INJECTION ===== */
 const w_host = "https://hidden-breeze-d81b";
 const w_sub = ".minedabstudios.workers.dev/";
 const WORKER_URL = w_host + w_sub;
 
-/* ===== 1. TEXTAREA AUTO-RESIZE & WORD COUNT ===== */
 const inputArea = $('input');
 inputArea.addEventListener('input', function() {
     this.style.height = 'auto';
@@ -314,7 +307,6 @@ inputArea.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
 });
 
-/* ===== 2. ENHANCED MARKDOWN & COPY CODE ===== */
 function md(t){
   let parsed = t
     .replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
@@ -327,11 +319,11 @@ function md(t){
                   <pre><code class="language-${lang}">${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
                 </div>`;
     })
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold
-    .replace(/(^|[^\*])\*([^\s\*](?:[^\*]*?[^\s\*])?)\*(?=[^\*]|$)/g, "$1<em>$2</em>") // Italic
-    .replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>") // Blockquotes
-    .replace(/`([^`]+)`/g,"<code>$1</code>") // Inline code
-    .replace(/\n/g,"<br>\n"); // Line breaks with proper hidden \n for pasting
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") 
+    .replace(/(^|[^\*])\*([^\s\*](?:[^\*]*?[^\s\*])?)\*(?=[^\*]|$)/g, "$1<em>$2</em>") 
+    .replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>") 
+    .replace(/`([^`]+)`/g,"<code>$1</code>") 
+    .replace(/\n/g,"<br>\n"); 
   return parsed;
 }
 
@@ -340,6 +332,16 @@ function copyToClipboard(btn) {
     navigator.clipboard.writeText(codeBlock.innerText);
     btn.innerText = "Copied!";
     setTimeout(() => btn.innerText = "Copy", 2000);
+}
+
+// Global copy function for the bypass button
+function copyTextToClipboard(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
 }
 
 function downloadScript(code, ext) {
@@ -372,19 +374,19 @@ async function downloadImage(imgUrl, fileName, btn) {
     }
 }
 
-/* ===== 3. STATE & TIMESTAMPS ===== */
-let chats = JSON.parse(localStorage.getItem("nexus_vfinal8_chats")||"[]");
-let active = localStorage.getItem("nexus_vfinal8_active");
+let chats = JSON.parse(localStorage.getItem("nexus_vfinal24_chats")||"[]");
+let active = localStorage.getItem("nexus_vfinal24_active");
 let globalInstructions = localStorage.getItem("nexus_memory") || "";
 let currentFlow = localStorage.getItem("nx_flow") || "raw";
 let currentSpeed = localStorage.getItem("nx_speed") || "80";
+let useDeepThink = localStorage.getItem("nx_deep_think") === "true";
 let isGeneratingImage = false;
 
 if (!chats.length) newChat(true);
 
 $("systemPrompt").value = globalInstructions;
+$("intelToggle").checked = useDeepThink;
 
-// Initialize Settings
 $("flowSelect").value = currentFlow;
 $("flowSpeed").value = currentSpeed;
 applyFlow(currentFlow, true);
@@ -393,9 +395,7 @@ applySpeed(currentSpeed, true);
 renderList();
 loadChat(active || chats[0].id);
 
-function getTime() {
-    return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-}
+function getTime() { return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
 
 function newChat(isInit = false){
   const id = Date.now().toString();
@@ -409,7 +409,7 @@ function newChat(isInit = false){
 }
 
 function loadChat(id){
-  active = id; localStorage.setItem("nexus_vfinal8_active",id);
+  active = id; localStorage.setItem("nexus_vfinal24_active",id);
   $("view").innerHTML="";
   const chat = chats.find(c=>c.id===id);
   if(chat) {
@@ -420,25 +420,37 @@ function loadChat(id){
   renderList();
 }
 
-function renderList(){
-  const list = $("chatList"); list.innerHTML="";
-  chats.forEach(c=>{
-    const d = document.createElement("div");
-    d.className="chat-item"+(c.id===active?" active":"");
-    d.innerHTML = `${c.title} <button class="del-btn" onclick="event.stopPropagation(); deleteChat('${c.id}')">×</button>`;
-    d.onclick = () => {
-        loadChat(c.id);
-        if(window.innerWidth <= 768) {
-            $('sidebar').classList.remove('open');
-            $('overlay').classList.remove('active');
-        }
-    };
-    list.appendChild(d);
-  });
+function filterChats() {
+    const query = $("searchChats").value.toLowerCase();
+    const list = $("chatList");
+    list.innerHTML = "";
+    
+    chats.filter(c => {
+        if(c.title.toLowerCase().includes(query)) return true;
+        return c.messages.some(m => 
+            (m.text && m.text.toLowerCase().includes(query)) || 
+            (m.reply && m.reply.toLowerCase().includes(query))
+        );
+    }).forEach(c => {
+        const d = document.createElement("div");
+        d.className = `chat-item ${c.id === active ? 'active' : ''}`;
+        d.innerHTML = `<span>${c.title}</span><button class="del-btn" onclick="deleteChat('${c.id}', event)">×</button>`;
+        d.onclick = () => {
+            loadChat(c.id);
+            if(window.innerWidth <= 768) {
+                $('sidebar').classList.remove('open');
+                $('overlay').classList.remove('active');
+            }
+        };
+        list.appendChild(d);
+    });
 }
 
-function save(){ localStorage.setItem("nexus_vfinal8_chats",JSON.stringify(chats)); }
-function deleteChat(id){ 
+function renderList(){ filterChats(); }
+
+function save(){ localStorage.setItem("nexus_vfinal24_chats",JSON.stringify(chats)); }
+function deleteChat(id, event){ 
+  event.stopPropagation();
   chats = chats.filter(c=>c.id!==id); save(); renderList(); 
   if(chats.length) loadChat(chats[0].id); else newChat(); 
 }
@@ -482,15 +494,19 @@ function applySpeed(val, init=false) {
     $("speedVal").innerText = val + "%";
 }
 
-/* ===== 4. QUICK ACTION CHIPS ===== */
+function toggleIntel(val) {
+    useDeepThink = val;
+    localStorage.setItem("nx_deep_think", val);
+}
+
 function showChips() {
     const d = document.createElement("div");
     d.className = "chips-wrap";
     d.id = "startupChips";
     const prompts = [
-        "/script python script to scrape a website", 
+        "/text Write a formal essay on AI", 
         "/himage a futuristic neon city",
-        "Explain quantum computing"
+        "/script python script to scrape a website"
     ];
     prompts.forEach(p => {
         const btn = document.createElement("button");
@@ -502,7 +518,6 @@ function showChips() {
     $("view").appendChild(d);
 }
 
-/* ===== 5. EXPORT, LOCAL HUMANIZER, & AUTO-TITLE LOGIC ===== */
 function exportDocument(textToExport, title) {
     let content = `<html><head><meta charset="utf-8"></head><body>${textToExport.replace(/\n/g, '<br>')}</body></html>`;
     const blob = new Blob(['\ufeff', content], {type: 'application/msword'});
@@ -513,26 +528,34 @@ function exportDocument(textToExport, title) {
 }
 
 function copyDocumentText(btn, textToCopy) {
-    // Force standard OS line breaks for perfect copying
     const formattedText = textToCopy.replace(/\r?\n/g, "\r\n");
     navigator.clipboard.writeText(formattedText);
     btn.innerText = "✓ Copied";
     setTimeout(() => btn.innerText = "📋 Copy Text", 2000);
 }
 
-// LOCAL CLOUDFLARE WORKER HUMANIZER + TOKEN BREAKER
+// 🟢 THE LOCAL "FEW-SHOT CLONE" HUMANIZER
 async function humanizeDocument(idx, btnElement) {
     const chat = chats.find(c=>c.id===active);
     const originalText = chat.messages[idx].reply;
     
     $("loader").style.display = "flex";
+    const originalBtnText = btnElement.innerHTML;
+    btnElement.innerHTML = "⏳ Humanizing...";
 
     try {
         const selectedModel = $("modelSelect").value;
         const targetModel = selectedModel === "multi" ? "llama-3.3-70b-versatile" : selectedModel;
         
-        // NEW PERSONALIZED STEALTH MODE PROMPT
-        const humanizerPrompt = "You are a student writing a formal essay. Rewrite the provided text to match this exact writing style. Use straightforward, accessible vocabulary (e.g., 'important', 'efficient', 'useful', 'alternative'). State opinions directly if applicable. Use basic transitions like 'For example', 'However', and 'because'. Keep the tone formal but distinctly human and slightly unpolished, like a high school essay draft. NEVER use typical AI buzzwords like 'Furthermore', 'Moreover', 'Crucial', 'Tapestry', 'Delve', 'Testament', or 'In conclusion'. Output ONLY the rewritten text.";
+        const systemInstruction = `You are an expert ghostwriter. I am giving you three examples of my actual writing. Analyze my stylistic fingerprint: my vocabulary level, my dramatic pacing, how I mix short punchy sentences with long descriptive ones, and my slight grammatical imperfections.
+
+Example 1: I walked over to the queue, with the fresh aftertaste of a burger. I was uncertain, but I shook it off, replacing it with anticipation. Slowly but surely the line moved forwards, and eventually the Nightmare blasted wind at me, and it screeched to a stop. I stared. The Nightmare stared back, its menacing eyes on the front glaring. I sat, knees shaking. I was pinned down. There was the smell of the oily machine. I was already feeling sick, already regretting my decisions. It started, it lurched, it groaned, as it began a slow ascent. We stopped. I could taste the sour taste of something familiar in my mouth. We shook. I smelt more oil leaking. Maybe it won't be so bad? The sounds of the Nightmare stopped, and we dove down. Directly down. Drifting in the air, for what felt for hours. I felt weightless. My stomach was swimming in my head when we finally halted, I was still gripping the rough metal bar when the rollercoaster came to an end. Again!
+
+Example 2: I was just sitting in the coffee shop when it started drizzling. I didn't think much of it at the time, until the door opened and the gust of wind whistled through the air and knocked my drink over. The relentless gust continued until I slammed the door shut with all my might. The wind outside continued to strengthen during the day, and I decided to finally leave the café and tread back home. There were debris in the air, Howling just past my head. The wind never stopped. In the safety (or so I though) of my home, I looked helplessly out the window, watching the light rain turn into a hurricane, sucking up cars like a vacuum cleaner with dust. I felt like I was watching the last moments of my life. It was petrifying, the thunder outside causing chaos. Eventually, my house was taken apart piece by piece, like a child playing with bricks. The roof tore off with a riiiipppp and I was sucked out as well! The sirens were wailing in the background, their
+
+Example 3: Mike thought it was strange that in the credits of the film another rumbling started. Then it hit him. A real tsunami was about to crash into the cinema, or rephrased, into the power station. He remembered hearing about this on the news, but had completely forgot about it because he was so excited to be the first one in the new cinema. This time he shot out of his seat from the crash of the wave, buried deep under the surface level. Drowning. His survival instincts took over. Thrashing up, his lungs were burning. He could see the light. Almost there. And he reached it, just as he was about to pass out. Gasping, his lungs were burning from the lack of oxygen for such a long time. Suddenly the cinema drained, and the screen said: "Hope you enjoyed the film!" He realised that he still had the glasses on. He took them off, only to realise the whole film was an illusion. He was washed away to a small mound, not far from his city, with the classic palm tree on top. He watched the third second tsunami obliterate his city, with only rubble and sludge left. He swam over, and immediately rushed toward his home. It was gone. In its place? A turned over Honda Civic, with the same numberplate. It was all real. The only thing he could do now was wait for rescuers, and start his life over again. At least he was still alive.
+
+Now, take my following input and completely rewrite it from scratch so it perfectly matches the stylistic fingerprint of my examples above. Do not use ANY AI buzzwords (Furthermore, Moreover, Tapestry, Delve). Do not act like an assistant. Output ONLY the rewritten text.`;
 
         const res = await fetch(WORKER_URL, {
             method: "POST",
@@ -540,7 +563,7 @@ async function humanizeDocument(idx, btnElement) {
             body: JSON.stringify({
                 model: targetModel,
                 messages: [
-                    {role: "system", content: humanizerPrompt},
+                    {role: "system", content: systemInstruction},
                     {role: "user", content: originalText}
                 ]
             })
@@ -549,18 +572,25 @@ async function humanizeDocument(idx, btnElement) {
         const data = await res.json();
         let newText = data.reply;
 
-        // --- THE ZEROGPT TOKEN BREAKER (\u2060 Word Joiner Edition) ---
-        // Injects invisible Word Joiners into random words to break AI detection math
-        // while perfectly maintaining MS Word text-wrapping rules.
-        let words = newText.split(" ");
-        for (let i = 0; i < words.length; i++) {
-            if (words[i].length > 4 && Math.random() > 0.4) {
-                let pos = Math.floor(words[i].length / 2);
-                words[i] = words[i].substring(0, pos) + "\u2060" + words[i].substring(pos);
+        const homoglyphs = {'a': 'а', 'e': 'е', 'o': 'о', 'c': 'с', 'p': 'р', 'x': 'х', 'y': 'у'};
+        
+        let resultStr = "";
+        for (let i = 0; i < newText.length; i++) {
+            let charLower = newText[i].toLowerCase();
+            let isUpper = (newText[i] === newText[i].toUpperCase());
+            
+            if (homoglyphs[charLower] && Math.random() > 0.7) {
+                let replacement = homoglyphs[charLower];
+                resultStr += isUpper ? replacement.toUpperCase() : replacement;
+            } else {
+                resultStr += newText[i];
+            }
+            
+            if (newText[i] !== ' ' && newText[i] !== '\n' && Math.random() > 0.85) {
+                resultStr += (Math.random() > 0.5) ? "\u00AD" : "\u200C";
             }
         }
-        newText = words.join(" ");
-        // -------------------------------------------------------------
+        newText = resultStr;
 
         chat.messages[idx].reply = newText;
         save(); loadChat(active);
@@ -569,7 +599,7 @@ async function humanizeDocument(idx, btnElement) {
         alert("❌ Failed to connect to Nexus Humanizer.");
     } finally {
         $("loader").style.display = "none";
-        if (btnElement) btnElement.innerHTML = "🧑‍💻 Humanize";
+        if (btnElement) btnElement.innerHTML = originalBtnText;
     }
 }
 
@@ -695,7 +725,12 @@ async function triggerBackend(chat, cmds) {
         return {role: m.role, content: contentStr};
     });
 
-    let sysPrompt = globalInstructions;
+    let sysPrompt = globalInstructions || "You are Nexus Ultra, a highly advanced, logical, and precise AI assistant. Provide extremely accurate, well-formatted, and helpful responses.";
+
+    if (useDeepThink) {
+        sysPrompt += "\n\n[DEEP REASONING MODE ENABLED]: CRITICAL INSTRUCTION: You must engage in deep Chain-of-Thought reasoning. Break down the user's request step-by-step, analyze all constraints, and formulate a highly logical plan before providing the final answer. Ensure extreme precision, accuracy, and factual correctness.";
+    }
+
     if(cmds.isTextCommand) {
         sysPrompt += "\n\nCRITICAL INSTRUCTION: You are generating a formal document. Output ONLY the requested document text. Do NOT include any conversational filler.";
     } else if (cmds.isAdviseCommand) {
@@ -798,13 +833,12 @@ function renderMsg(m, idx, shouldStream = false) {
     bubble.appendChild(imgWrap);
     container.appendChild(bubble);
   } else {
-    // TEXT HANDLER WITH ULTRA-STABLE STREAMING LOGIC
     container.appendChild(bubble);
     
     if (shouldStream && m.role === "assistant") {
         let fullText = m.reply;
         let i = 0;
-        let baseDelay = 101 - parseInt(currentSpeed); // 1ms to 100ms
+        let baseDelay = 101 - parseInt(currentSpeed);
         let speed = currentFlow === "raw" ? 5 : baseDelay; 
         
         bubble.innerHTML = currentFlow === "typewriter" ? "<span class='typing-cursor'></span>" : "";
@@ -831,7 +865,6 @@ function renderMsg(m, idx, shouldStream = false) {
                         let currentStr = fullText.substring(0, i + charsToAdd);
                         bubble.innerHTML = currentStr.replace(/\n/g, '<br>\n').replace(/</g, "&lt;").replace(/>/g, "&gt;") + "<span class='typing-cursor'></span>";
                     } else {
-                        // Raw
                         let currentStr = fullText.substring(0, i + charsToAdd);
                         bubble.innerHTML = currentStr.replace(/\n/g, '<br>\n').replace(/</g, "&lt;").replace(/>/g, "&gt;");
                     }
@@ -875,23 +908,44 @@ function renderMsg(m, idx, shouldStream = false) {
   if(m.role === "assistant" && !m.img) {
       if(m.isTextMode) {
           const docCopyBtn = document.createElement("button");
-          docCopyBtn.className = "action-btn"; docCopyBtn.innerHTML = "📋 Copy Text";
+          docCopyBtn.className = "action-btn"; docCopyBtn.innerHTML = "📋 Copy";
           docCopyBtn.onclick = () => copyDocumentText(docCopyBtn, m.reply);
           meta.appendChild(docCopyBtn);
           
           const docExportBtn = document.createElement("button");
-          docExportBtn.className = "action-btn"; docExportBtn.innerHTML = "📥 Export to Word";
+          docExportBtn.className = "action-btn"; docExportBtn.innerHTML = "📥 Export";
           docExportBtn.onclick = () => exportDocument(m.reply, chats.find(c=>c.id===active).title);
           meta.appendChild(docExportBtn);
 
-          // INTERNAL WORKER HUMANIZER TRIGGER
+          // 🧑‍💻 THE LOCAL FEW-SHOT CLONE
           const humanizeBtn = document.createElement("button");
-          humanizeBtn.className = "action-btn"; humanizeBtn.innerHTML = "🧑‍💻 Humanize";
+          humanizeBtn.className = "action-btn"; humanizeBtn.innerHTML = "🧑‍💻 Humanize (Local)";
           humanizeBtn.onclick = () => { 
-              humanizeBtn.innerHTML = "⏳ Humanizing..."; 
               humanizeDocument(idx, humanizeBtn); 
           };
           meta.appendChild(humanizeBtn);
+          
+          // ✨ THE EXTERNAL ESSAYHUMANIZER LINK (Fixed Absolute Routing)
+          const premiumBtn = document.createElement("button");
+          premiumBtn.className = "action-btn premium"; 
+          premiumBtn.innerHTML = "✨ 100% Bypass";
+          premiumBtn.onclick = () => { 
+              copyTextToClipboard(m.reply);
+              
+              // Force the browser to evaluate it as an absolute web URL, not a local file path
+              const link = document.createElement('a');
+              link.href = '[https://essayhumanizer.io/bypass-ai-detector/grubby-ai](https://essayhumanizer.io/bypass-ai-detector/grubby-ai)';
+              link.target = '_blank';
+              link.rel = 'noopener noreferrer';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              
+              const originalText = premiumBtn.innerHTML;
+              premiumBtn.innerHTML = "Copied! Opening...";
+              setTimeout(() => premiumBtn.innerHTML = originalText, 2500);
+          };
+          meta.appendChild(premiumBtn);
       }
       
       if(m.isScriptMode) {
@@ -904,7 +958,7 @@ function renderMsg(m, idx, shouldStream = false) {
       const chat = chats.find(c=>c.id===active);
       if(idx === chat.messages.length - 1) {
           const regenBtn = document.createElement("button");
-          regenBtn.className = "action-btn"; regenBtn.innerHTML = "🔄 Regenerate";
+          regenBtn.className = "action-btn"; regenBtn.innerHTML = "🔄 Retry";
           regenBtn.onclick = () => regenerateMsg(idx);
           meta.appendChild(regenBtn);
       }
@@ -915,17 +969,6 @@ function renderMsg(m, idx, shouldStream = false) {
   $("view").scrollTop = $("view").scrollHeight;
 }
 
-function handleFileUpload(input) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => { 
-      inputArea.value += `\n[File: ${file.name}]\n${e.target.result}\n`; 
-      inputArea.dispatchEvent(new Event('input')); 
-  };
-  reader.readAsText(file);
-}
-
-/* ===== UI TOGGLES & TOUCH EVENTS ===== */
 function toggleCollapsible() {
     const content = $("settingsContent");
     content.style.display = content.style.display === "block" ? "none" : "block";
@@ -943,6 +986,16 @@ function toggleTheme(){ document.body.classList.toggle("light"); localStorage.se
 
 applyTheme(localStorage.getItem("nx_theme")||"default");
 if(localStorage.getItem("nx_mode")==="L") document.body.classList.add("light");
+
+function handleFileUpload(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => { 
+      inputArea.value += `\n[File: ${file.name}]\n${e.target.result}\n`; 
+      inputArea.dispatchEvent(new Event('input')); 
+  };
+  reader.readAsText(file);
+}
 </script>
 </body>
 </html>
