@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Nexus Pro</title>
+<title>Nexus Ultra | Pro Edition</title>
 
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -140,10 +140,8 @@ p code { background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 6px; font
 
 .msg-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 8px; display: flex; gap: 12px; opacity: 0.6; transition: 0.2s; flex-wrap: wrap; }
 .msg-meta:hover { opacity: 1; }
-.action-btn { background: var(--glass); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 5px 12px; cursor: pointer; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px; transition: 0.2s; }
+.action-btn { background: var(--glass); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 5px 12px; cursor: pointer; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px; transition: 0.2s; text-decoration: none; }
 .action-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--glass-heavy); }
-.action-btn.premium { border-color: rgba(255, 0, 234, 0.5); color: #ff00ea; }
-.action-btn.premium:hover { background: rgba(255, 0, 234, 0.1); border-color: #ff00ea; }
 
 .chips-wrap { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: auto; padding-bottom: 20px; }
 .chip { background: var(--glass-heavy); border: 1px solid var(--border); color: var(--text); padding: 8px 15px; border-radius: 100px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
@@ -161,7 +159,7 @@ p code { background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 6px; font
 @keyframes pulse { 0%, 100% { transform: scale(0.6); opacity: 0.3; } 50% { transform: scale(1.2); opacity: 1; } }
 
 /* ========== 5. FOOTER & INPUT ========== */
-footer { padding: 20px 30px 30px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; }
+footer { padding: 20px 30px 30px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; position: relative; } 
 .word-count { font-size: 0.65rem; color: var(--text-muted); text-align: right; padding-right: 15px; opacity:0.6; }
 .input-row { display: flex; gap: 12px; background: var(--glass-heavy); padding: 10px 10px 10px 20px; border-radius: 30px; border: 1px solid var(--border); align-items: flex-end; box-shadow: 0 10px 40px rgba(0,0,0,0.3); transition: 0.3s; }
 .input-row:focus-within { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,255,136,0.15); }
@@ -171,6 +169,12 @@ textarea#input { flex: 1; background: none; border: none; outline: none; color: 
 .circle-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,255,136,0.5); }
 .attach-btn { background: transparent; border: none; color: var(--text-muted); opacity: 0.6; cursor: pointer; font-size: 1.5rem; padding: 0 5px; margin-bottom: 6px; transition: 0.2s; }
 .attach-btn:hover { opacity: 1; color: var(--accent); }
+
+/* IMAGE PREVIEW CLIPBOARD */
+#img-preview-wrap { display: none; position: absolute; bottom: calc(100% + 15px); left: 30px; background: var(--glass-heavy); padding: 6px; border-radius: 12px; border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 10; animation: msgIn 0.2s ease-out; }
+#img-preview-wrap img { height: 65px; border-radius: 8px; display: block; }
+#remove-img-btn { position: absolute; top: -8px; right: -8px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.3); transition: 0.2s; }
+#remove-img-btn:hover { transform: scale(1.1); }
 
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 950; backdrop-filter: blur(5px); }
 .overlay.active { display: block; }
@@ -279,10 +283,16 @@ textarea#input { flex: 1; background: none; border: none; outline: none; color: 
 
     <footer>
       <div class="word-count" id="wordCount">0 words</div>
+      
+      <div id="img-preview-wrap">
+          <button id="remove-img-btn" onclick="removeAttachedImage()">×</button>
+          <img id="paste-preview" src="">
+      </div>
+
       <div class="input-row">
         <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(this)">
         <button class="attach-btn" onclick="$('fileInput').click()" title="Attach File">📎</button>
-        <textarea id="input" rows="1" placeholder="Message Nexus... (/script, /image, /himage, /text)" autocomplete="off"></textarea>
+        <textarea id="input" rows="1" placeholder="Message Nexus... (/image, /script, /text)" autocomplete="off"></textarea>
         <button class="circle-btn" onclick="send()">↑</button>
       </div>
     </footer>
@@ -292,7 +302,34 @@ textarea#input { flex: 1; background: none; border: none; outline: none; color: 
 <script>
 const $ = id => document.getElementById(id);
 
-// Shattering URLs to prevent markdown auto-linking corruption
+/* ===== 1. CLIPBOARD IMAGE INTERCEPTOR ===== */
+let currentAttachedImage = null;
+
+document.addEventListener('paste', function(e) {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (let index in items) {
+        const item = items[index];
+        if (item.kind === 'file' && item.type.startsWith('image/')) {
+            const blob = item.getAsFile();
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                currentAttachedImage = event.target.result;
+                $('paste-preview').src = currentAttachedImage;
+                $('img-preview-wrap').style.display = 'block';
+            };
+            reader.readAsDataURL(blob);
+            e.preventDefault(); 
+        }
+    }
+});
+
+function removeAttachedImage() {
+    currentAttachedImage = null;
+    $('img-preview-wrap').style.display = 'none';
+    $('paste-preview').src = '';
+}
+/* ========================================== */
+
 const w_p1 = "https://";
 const w_p2 = "hidden-breeze-d81b";
 const w_sub = ".minedabstudios.workers.dev/";
@@ -303,13 +340,13 @@ const img_p2 = "image.pollinations.ai";
 
 const inputArea = $('input');
 inputArea.addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = (this.scrollHeight) + 'px';
-    const words = this.value.trim().split(/\s+/).filter(w => w.length > 0).length;
-    $('wordCount').innerText = words + (words === 1 ? " word" : " words");
+  this.style.height = 'auto';
+  this.style.height = (this.scrollHeight) + 'px';
+  const words = this.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+  $('wordCount').innerText = words + (words === 1 ? " word" : " words");
 });
 inputArea.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
 });
 
 function md(t){
@@ -333,45 +370,54 @@ function md(t){
 }
 
 function copyToClipboard(btn) {
-    const codeBlock = btn.parentElement.nextElementSibling.querySelector('code') || btn.parentElement.nextElementSibling;
-    navigator.clipboard.writeText(codeBlock.innerText);
-    btn.innerText = "Copied!";
-    setTimeout(() => btn.innerText = "Copy", 2000);
+  const codeBlock = btn.parentElement.nextElementSibling.querySelector('code') || btn.parentElement.nextElementSibling;
+  navigator.clipboard.writeText(codeBlock.innerText);
+  btn.innerText = "Copied!";
+  setTimeout(() => btn.innerText = "Copy", 2000);
+}
+
+function copyTextToClipboard(text) {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
 }
 
 function downloadScript(code, ext) {
-    const cleanCode = code.replace(/```[a-z]*\n?/g, '').replace(/```/g, '');
-    const blob = new Blob([cleanCode], {type: "text/plain"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "nexus_script_" + Date.now() + ext;
-    a.click();
+  const cleanCode = code.replace(/```[a-z]*\n?/g, '').replace(/```/g, '');
+  const blob = new Blob([cleanCode], {type: "text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "nexus_script_" + Date.now() + ext;
+  a.click();
 }
 
 async function downloadImage(imgUrl, fileName, btn) {
-    btn.innerText = "⏳ Downloading...";
-    try {
-        const response = await fetch(imgUrl);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName + '.jpg';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-        btn.innerText = "✓ Saved";
-        setTimeout(() => btn.innerText = "📥 Download", 2000);
-    } catch(e) {
-        window.open(imgUrl, '_blank');
-        btn.innerText = "📥 Download";
-    }
+  btn.innerText = "⏳ Downloading...";
+  try {
+      const response = await fetch(imgUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName + '.jpg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      btn.innerText = "✓ Saved";
+      setTimeout(() => btn.innerText = "📥 Download", 2000);
+  } catch(e) {
+      window.open(imgUrl, '_blank');
+      btn.innerText = "📥 Download";
+  }
 }
 
 // Ensure clean separation for local storage versioning
-let chats = JSON.parse(localStorage.getItem("nexus_vfinal28_chats")||"[]");
-let active = localStorage.getItem("nexus_vfinal28_active");
+let chats = JSON.parse(localStorage.getItem("nexus_vfinal37_chats")||"[]");
+let active = localStorage.getItem("nexus_vfinal37_active");
 let globalInstructions = localStorage.getItem("nexus_memory") || "";
 let currentFlow = localStorage.getItem("nx_flow") || "raw";
 let currentSpeed = localStorage.getItem("nx_speed") || "80";
@@ -405,7 +451,7 @@ function newChat(isInit = false){
 }
 
 function loadChat(id){
-  active = id; localStorage.setItem("nexus_vfinal28_active",id);
+  active = id; localStorage.setItem("nexus_vfinal37_active",id);
   $("view").innerHTML="";
   const chat = chats.find(c=>c.id===id);
   if(chat) {
@@ -417,34 +463,34 @@ function loadChat(id){
 }
 
 function filterChats() {
-    const query = $("searchChats").value.toLowerCase();
-    const list = $("chatList");
-    list.innerHTML = "";
-    
-    chats.filter(c => {
-        if(c.title.toLowerCase().includes(query)) return true;
-        return c.messages.some(m => 
-            (m.text && m.text.toLowerCase().includes(query)) || 
-            (m.reply && m.reply.toLowerCase().includes(query))
-        );
-    }).forEach(c => {
-        const d = document.createElement("div");
-        d.className = `chat-item ${c.id === active ? 'active' : ''}`;
-        d.innerHTML = `<span>${c.title}</span><button class="del-btn" onclick="deleteChat('${c.id}', event)">×</button>`;
-        d.onclick = () => {
-            loadChat(c.id);
-            if(window.innerWidth <= 768) {
-                $('sidebar').classList.remove('open');
-                $('overlay').classList.remove('active');
-            }
-        };
-        list.appendChild(d);
-    });
+  const query = $("searchChats").value.toLowerCase();
+  const list = $("chatList");
+  list.innerHTML = "";
+  
+  chats.filter(c => {
+      if(c.title.toLowerCase().includes(query)) return true;
+      return c.messages.some(m => 
+          (m.text && m.text.toLowerCase().includes(query)) || 
+          (m.reply && m.reply.toLowerCase().includes(query))
+      );
+  }).forEach(c => {
+      const d = document.createElement("div");
+      d.className = `chat-item ${c.id === active ? 'active' : ''}`;
+      d.innerHTML = `<span>${c.title}</span><button class="del-btn" onclick="deleteChat('${c.id}', event)">×</button>`;
+      d.onclick = () => {
+          loadChat(c.id);
+          if(window.innerWidth <= 768) {
+              $('sidebar').classList.remove('open');
+              $('overlay').classList.remove('active');
+          }
+      };
+      list.appendChild(d);
+  });
 }
 
 function renderList(){ filterChats(); }
 
-function save(){ localStorage.setItem("nexus_vfinal28_chats",JSON.stringify(chats)); }
+function save(){ localStorage.setItem("nexus_vfinal37_chats",JSON.stringify(chats)); }
 function deleteChat(id, event){ 
   event.stopPropagation();
   chats = chats.filter(c=>c.id!==id); save(); renderList(); 
@@ -452,195 +498,206 @@ function deleteChat(id, event){
 }
 
 function updateMemory() {
-    globalInstructions = $("systemPrompt").value;
-    localStorage.setItem("nexus_memory", globalInstructions);
-    $("memNotify").style.display = "block";
-    setTimeout(() => { $("memNotify").style.display = "none"; }, 2000);
+  globalInstructions = $("systemPrompt").value;
+  localStorage.setItem("nexus_memory", globalInstructions);
+  $("memNotify").style.display = "block";
+  setTimeout(() => { $("memNotify").style.display = "none"; }, 2000);
 }
 
 function exportMemory() {
-    const mem = $("systemPrompt").value || "";
-    const blob = new Blob([mem], {type: "text/plain"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "nexus_memory.txt";
-    a.click();
+  const mem = $("systemPrompt").value || "";
+  const blob = new Blob([mem], {type: "text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "nexus_memory.txt";
+  a.click();
 }
 
 function importMemory(input) {
-    const file = input.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-        $("systemPrompt").value = e.target.result;
-        updateMemory();
-    };
-    reader.readAsText(file);
-    input.value = ""; 
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+      $("systemPrompt").value = e.target.result;
+      updateMemory();
+  };
+  reader.readAsText(file);
+  input.value = ""; 
 }
 
 function applyFlow(val, init=false) {
-    currentFlow = val;
-    if(!init) localStorage.setItem("nx_flow", val);
-    $("speedWrap").style.display = (val === "raw") ? "none" : "block";
+  currentFlow = val;
+  if(!init) localStorage.setItem("nx_flow", val);
+  $("speedWrap").style.display = (val === "raw") ? "none" : "block";
 }
 
 function applySpeed(val, init=false) {
-    currentSpeed = val;
-    if(!init) localStorage.setItem("nx_speed", val);
-    $("speedVal").innerText = val + "%";
+  currentSpeed = val;
+  if(!init) localStorage.setItem("nx_speed", val);
+  $("speedVal").innerText = val + "%";
 }
 
 function toggleIntel(val) {
-    useDeepThink = val;
-    localStorage.setItem("nx_deep_think", val);
+  useDeepThink = val;
+  localStorage.setItem("nx_deep_think", val);
 }
 
 function showChips() {
-    const d = document.createElement("div");
-    d.className = "chips-wrap";
-    d.id = "startupChips";
-    const prompts = [
-        "/text Write a formal essay on AI", 
-        "/himage a futuristic neon city",
-        "/script python script to scrape a website"
-    ];
-    prompts.forEach(p => {
-        const btn = document.createElement("button");
-        btn.className = "chip";
-        btn.innerText = p;
-        btn.onclick = () => { inputArea.value = p; send(); };
-        d.appendChild(btn);
-    });
-    $("view").appendChild(d);
+  const d = document.createElement("div");
+  d.className = "chips-wrap";
+  d.id = "startupChips";
+  const prompts = [
+      "/text Write a formal essay on AI", 
+      "Explain how Volcanoes work",
+      "/script python script to scrape a website"
+  ];
+  prompts.forEach(p => {
+      const btn = document.createElement("button");
+      btn.className = "chip";
+      btn.innerText = p;
+      btn.onclick = () => { inputArea.value = p; send(); };
+      d.appendChild(btn);
+  });
+  $("view").appendChild(d);
 }
 
 function exportDocument(textToExport, title) {
-    let content = `<html><head><meta charset="utf-8"></head><body>${textToExport.replace(/\n/g, '<br>')}</body></html>`;
-    const blob = new Blob(['\ufeff', content], {type: 'application/msword'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_document.doc`;
-    a.click();
+  let content = `<html><head><meta charset="utf-8"></head><body>${textToExport.replace(/\n/g, '<br>')}</body></html>`;
+  const blob = new Blob(['\ufeff', content], {type: 'application/msword'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_document.doc`;
+  a.click();
 }
 
 function copyDocumentText(btn, textToCopy) {
-    const formattedText = textToCopy.replace(/\r?\n/g, "\r\n");
-    navigator.clipboard.writeText(formattedText);
-    btn.innerText = "✓ Copied";
-    setTimeout(() => btn.innerText = "📋 Copy Text", 2000);
+  const formattedText = textToCopy.replace(/\r?\n/g, "\r\n");
+  navigator.clipboard.writeText(formattedText);
+  btn.innerText = "✓ Copied";
+  setTimeout(() => btn.innerText = "📋 Copy Text", 2000);
 }
 
-// 🟢 THE LOCAL "FEW-SHOT CLONE" HUMANIZER
-async function humanizeDocument(idx, btnElement) {
-    const chat = chats.find(c=>c.id===active);
-    const originalText = chat.messages[idx].reply;
-    
-    $("loader").style.display = "flex";
-    const originalBtnText = btnElement.innerHTML;
-    btnElement.innerHTML = "⏳ Humanizing...";
+// 🟢 THE LOCAL DEGRADER (YEAR 8 VOCABULARY & STYLE)
+async function degradeDocument(idx, btnElement) {
+  const chat = chats.find(c=>c.id===active);
+  const originalText = chat.messages[idx].reply;
+  
+  $("loader").style.display = "flex";
+  const originalBtnText = btnElement.innerHTML;
+  btnElement.innerHTML = "⏳ Degrading...";
 
-    try {
-        const selectedModel = $("modelSelect").value;
-        const targetModel = selectedModel === "multi" ? "llama-3.3-70b-versatile" : selectedModel;
-        
-        const systemInstruction = `You are an expert ghostwriter. I am giving you three examples of my actual writing. Analyze my stylistic fingerprint: my vocabulary level, my dramatic pacing, how I mix short punchy sentences with long descriptive ones, and my slight grammatical imperfections.
+  try {
+      const targetModel = "llama-3.1-8b-instant"; // Fast model to prevent timeouts
+      
+      const systemInstruction = `[SYSTEM INSTRUCTION]
+You are Daniel, a Year 8 UK student. 
+Your task: Rewrite the provided text so the vocabulary is degraded to a Year 8 level.
+Only focus on the work. Do not add filler, outside knowledge, or commentary. Keep it literal and straightforward.
+Do not use big AI words like 'delve', 'crucial', or 'multifaceted'.
 
-Example 1: I walked over to the queue, with the fresh aftertaste of a burger. I was uncertain, but I shook it off, replacing it with anticipation. Slowly but surely the line moved forwards, and eventually the Nightmare blasted wind at me, and it screeched to a stop. I stared. The Nightmare stared back, its menacing eyes on the front glaring. I sat, knees shaking. I was pinned down. There was the smell of the oily machine. I was already feeling sick, already regretting my decisions. It started, it lurched, it groaned, as it began a slow ascent. We stopped. I could taste the sour taste of something familiar in my mouth. We shook. I smelt more oil leaking. Maybe it won't be so bad? The sounds of the Nightmare stopped, and we dove down. Directly down. Drifting in the air, for what felt for hours. I felt weightless. My stomach was swimming in my head when we finally halted, I was still gripping the rough metal bar when the rollercoaster came to an end. Again!
+Match this exact writing style (Daniel's examples):
+- "Many people still live near areas with volcanic actvity, for many reasons. a) The first is for the soil. Soil near a volcano is especially fertile, making it ideal for farming."
+- "Only 2 percent of people could vote, and it was only rich white men, who could buy people's votes. This is a problem, because it means that the general public would not have a say in the voting, possibly electing a leader they did not like."
+- "He spent all of his money where he went, and then came the time of the great starvation, where he was. He was poor, having spent all his money..."
+- "The writer also creates the impression that refugees do not belong. This is shown when the poet states that They cannot Share our food..."
 
-Example 2: I was just sitting in the coffee shop when it started drizzling. I didn't think much of it at the time, until the door opened and the gust of wind whistled through the air and knocked my drink over. The relentless gust continued until I slammed the door shut with all my might. The wind outside continued to strengthen during the day, and I decided to finally leave the café and tread back home. There were debris in the air, Howling just past my head. The wind never stopped. In the safety (or so I though) of my home, I looked helplessly out the window, watching the light rain turn into a hurricane, sucking up cars like a vacuum cleaner with dust. I felt like I was watching the last moments of my life. It was petrifying, the thunder outside causing chaos. Eventually, my house was taken apart piece by piece, like a child playing with bricks. The roof tore off with a riiiipppp and I was sucked out as well! The sirens were wailing in the background, their
+Output ONLY the rewritten text.`;
 
-Example 3: Mike thought it was strange that in the credits of the film another rumbling started. Then it hit him. A real tsunami was about to crash into the cinema, or rephrased, into the power station. He remembered hearing about this on the news, but had completely forgot about it because he was so excited to be the first one in the new cinema. This time he shot out of his seat from the crash of the wave, buried deep under the surface level. Drowning. His survival instincts took over. Thrashing up, his lungs were burning. He could see the light. Almost there. And he reached it, just as he was about to pass out. Gasping, his lungs were burning from the lack of oxygen for such a long time. Suddenly the cinema drained, and the screen said: "Hope you enjoyed the film!" He realised that he still had the glasses on. He took them off, only to realise the whole film was an illusion. He was washed away to a small mound, not far from his city, with the classic palm tree on top. He watched the third second tsunami obliterate his city, with only rubble and sludge left. He swam over, and immediately rushed toward his home. It was gone. In its place? A turned over Honda Civic, with the same numberplate. It was all real. The only thing he could do now was wait for rescuers, and start his life over again. At least he was still alive.
+      let success = false;
+      let attempts = 0;
+      let newText = "";
 
-Now, take my following input and completely rewrite it from scratch so it perfectly matches the stylistic fingerprint of my examples above. Do not use ANY AI buzzwords (Furthermore, Moreover, Tapestry, Delve). Do not act like an assistant. Output ONLY the rewritten text.`;
+      while (!success && attempts < 3) {
+          try {
+              const res = await fetch(WORKER_URL, {
+                  method: "POST",
+                  headers: {"Content-Type": "application/json"},
+                  body: JSON.stringify({
+                      model: targetModel,
+                      messages: [
+                          {role: "system", content: systemInstruction},
+                          {role: "user", content: originalText.replace(/<[^>]*>?/gm, '')} // Strip HTML before sending
+                      ]
+                  })
+              });
+              
+              if (!res.ok) throw new Error("API Error");
+              
+              const data = await res.json();
+              if(data.reply) {
+                  newText = data.reply;
+                  success = true;
+              } else {
+                  throw new Error("Empty reply");
+              }
+          } catch(e) {
+              attempts++;
+              if (attempts < 3) {
+                  btnElement.innerHTML = `⚠️ Retrying (${attempts}/3)...`;
+                  await new Promise(r => setTimeout(r, 4000));
+              } else {
+                  throw e;
+              }
+          }
+      }
 
-        const res = await fetch(WORKER_URL, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                model: targetModel,
-                messages: [
-                    {role: "system", content: systemInstruction},
-                    {role: "user", content: originalText}
-                ]
-            })
-        });
-        
-        const data = await res.json();
-        let newText = data.reply;
-
-        const homoglyphs = {'a': 'а', 'e': 'е', 'o': 'о', 'c': 'с', 'p': 'р', 'x': 'х', 'y': 'у'};
-        
-        let resultStr = "";
-        for (let i = 0; i < newText.length; i++) {
-            let charLower = newText[i].toLowerCase();
-            let isUpper = (newText[i] === newText[i].toUpperCase());
-            
-            if (homoglyphs[charLower] && Math.random() > 0.7) {
-                let replacement = homoglyphs[charLower];
-                resultStr += isUpper ? replacement.toUpperCase() : replacement;
-            } else {
-                resultStr += newText[i];
-            }
-            
-            if (newText[i] !== ' ' && newText[i] !== '\n' && Math.random() > 0.85) {
-                resultStr += (Math.random() > 0.5) ? "\u00AD" : "\u200C";
-            }
-        }
-        newText = resultStr;
-
-        chat.messages[idx].reply = newText;
-        save(); loadChat(active);
-    } catch(e) {
-        console.error(e);
-        alert("❌ Failed to connect to Nexus Humanizer.");
-    } finally {
-        $("loader").style.display = "none";
-        if (btnElement) btnElement.innerHTML = originalBtnText;
-    }
+      chat.messages[idx].reply = newText;
+      save(); loadChat(active);
+      
+  } catch(e) {
+      console.error(e);
+      alert("❌ Failed to connect to Nexus Degrader.");
+  } finally {
+      $("loader").style.display = "none";
+      if (btnElement) btnElement.innerHTML = originalBtnText;
+  }
 }
 
 async function autoTitleChat(chatId, firstPrompt) {
-    try {
-        const res = await fetch(WORKER_URL, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                model: "llama-3.1-8b-instant",
-                messages: [
-                    {role: "system", content: "Summarize the input into 2-3 words. No quotes, no filler."},
-                    {role: "user", content: firstPrompt}
-                ]
-            })
-        });
-        const data = await res.json();
-        const chat = chats.find(c => c.id === chatId);
-        if (chat && data.reply) {
-            chat.title = data.reply.trim().substring(0, 25);
-            save(); renderList();
-            if (active === chatId) $("header-title").innerText = chat.title.toUpperCase();
-        }
-    } catch(e) { console.warn("Auto-titling failed."); }
+  try {
+      const res = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({
+              model: "llama-3.1-8b-instant",
+              messages: [
+                  {role: "system", content: "Summarize the input into 2-3 words. No quotes, no filler."},
+                  {role: "user", content: firstPrompt}
+              ]
+          })
+      });
+      const data = await res.json();
+      const chat = chats.find(c => c.id === chatId);
+      if (chat && data.reply) {
+          chat.title = data.reply.trim().substring(0, 25);
+          save(); renderList();
+          if (active === chatId) $("header-title").innerText = chat.title.toUpperCase();
+      }
+  } catch(e) { console.warn("Auto-titling failed."); }
 }
 
 /* ===== 6. REGENERATE ===== */
 function regenerateMsg(idx) {
-    const chat = chats.find(c=>c.id===active);
-    if(chat.messages[idx].role === "assistant") {
-        let cmds = {
-            isTextCommand: chat.messages[idx].isTextMode,
-            isAdviseCommand: chat.messages[idx].isAdviseMode,
-            isSearchCommand: chat.messages[idx].isSearchMode,
-            isScriptCommand: chat.messages[idx].isScriptMode
-        };
-        chat.messages.splice(idx, 1);
-        save(); loadChat(active);
-        triggerBackend(chat, cmds);
-    }
+  const chat = chats.find(c=>c.id===active);
+  if(chat.messages[idx].role === "assistant") {
+      let cmds = {
+          isTextCommand: chat.messages[idx].isTextMode,
+          isAdviseCommand: chat.messages[idx].isAdviseMode,
+          isSearchCommand: chat.messages[idx].isSearchMode,
+          isScriptCommand: chat.messages[idx].isScriptMode
+      };
+      chat.messages.splice(idx, 1);
+      save(); loadChat(active);
+      triggerBackend(chat, cmds);
+  }
 }
 
-/* ===== 7. CORE SEND & FETCH LOGIC ===== */
+
+/* ===== 8. CORE SEND & FETCH LOGIC ===== */
 async function send(){
-  const rawText = inputArea.value.trim(); if (!rawText) return;
+  const rawText = inputArea.value.trim(); 
+  
+  if (!rawText && !currentAttachedImage) return; 
+  
   inputArea.value="";
   inputArea.style.height = "auto"; 
   $('wordCount').innerText = "0 words";
@@ -649,6 +706,12 @@ async function send(){
 
   const chat = chats.find(c=>c.id===active);
   const user = {role:"user", text: rawText, time: getTime()};
+  
+  if (currentAttachedImage) {
+      user.img = currentAttachedImage;
+      removeAttachedImage();
+  }
+  
   chat.messages.push(user);
   renderMsg(user, chat.messages.length - 1, false);
 
@@ -710,16 +773,22 @@ async function triggerBackend(chat, cmds) {
     const selectedModel = $("modelSelect").value;
     const targetModel = selectedModel === "multi" ? "llama-3.3-70b-versatile" : selectedModel;
 
-    let currentMsgs = chat.messages.map(m => {
-        let contentStr = m.text || m.reply;
+    // Fix connection error by stripping HTML and only keeping the last few messages
+    let history = [];
+    for (let i = Math.max(0, chat.messages.length - 4); i < chat.messages.length; i++) {
+        let m = chat.messages[i];
+        let contentStr = m.text || m.reply || "";
+        
+        if(m.role === 'assistant') contentStr = contentStr.replace(/<[^>]*>?/gm, ''); // Remove HTML
+        
         if(m.role === "user") {
-            if(contentStr.toLowerCase().startsWith("/text ")) contentStr = contentStr.substring(6);
-            else if(contentStr.toLowerCase().startsWith("/advise ")) contentStr = contentStr.substring(8);
-            else if(contentStr.toLowerCase().startsWith("/search ")) contentStr = contentStr.substring(8);
-            else if(contentStr.toLowerCase().startsWith("/script ")) contentStr = contentStr.substring(8);
+            contentStr = contentStr.replace(/^\/(text|advise|search|script)\s+/i, '');
         }
-        return {role: m.role, content: contentStr};
-    });
+        
+        if (contentStr) {
+            history.push({role: m.role, content: contentStr});
+        }
+    }
 
     let sysPrompt = globalInstructions || "You are Nexus Ultra, a highly advanced, logical, and precise AI assistant. Provide extremely accurate, well-formatted, and helpful responses.";
 
@@ -744,10 +813,12 @@ async function triggerBackend(chat, cmds) {
         model: targetModel,
         messages: [
             {role: "system", content: sysPrompt},
-            ...currentMsgs
+            ...history
         ]
       })
     });
+    
+    if(!res.ok) throw new Error("Connection failed");
     
     const data = await res.json();
     const bot = {
@@ -887,7 +958,11 @@ function renderMsg(m, idx, shouldStream = false) {
             let langLabel = "CODE";
             bubble.innerHTML = `<div class="code-wrapper"><div class="code-header"><span>${langLabel}</span><button class="copy-btn" onclick="copyToClipboard(this)">Copy</button></div><pre><code class="language-javascript">${m.reply.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre></div>`;
         } else {
-            bubble.innerHTML = m.role === "user" ? m.text : md(m.reply);
+            bubble.innerHTML = m.role === "user" ? (m.text || "") : md(m.reply);
+            
+            if (m.img && m.role === "user") {
+                bubble.innerHTML += `<div style="margin-top: 10px;"><img src="${m.img}" style="max-width: 250px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.2);"></div>`;
+            }
         }
         container.querySelectorAll('pre code').forEach((block) => { hljs.highlightElement(block); });
     }
@@ -905,56 +980,21 @@ function renderMsg(m, idx, shouldStream = false) {
       if(m.isTextMode) {
           const docCopyBtn = document.createElement("button");
           docCopyBtn.className = "action-btn"; docCopyBtn.innerHTML = "📋 Copy";
-          docCopyBtn.onclick = () => copyDocumentText(docCopyBtn, m.reply);
+          docCopyBtn.onclick = () => copyDocumentText(docCopyBtn, m.reply.replace(/\*<span.*?span>\*\n/g, ''));
           meta.appendChild(docCopyBtn);
           
           const docExportBtn = document.createElement("button");
           docExportBtn.className = "action-btn"; docExportBtn.innerHTML = "📥 Export";
-          docExportBtn.onclick = () => exportDocument(m.reply, chats.find(c=>c.id===active).title);
+          docExportBtn.onclick = () => exportDocument(m.reply.replace(/\*<span.*?span>\*\n/g, ''), chats.find(c=>c.id===active).title);
           meta.appendChild(docExportBtn);
-
-          const humanizeBtn = document.createElement("button");
-          humanizeBtn.className = "action-btn"; humanizeBtn.innerHTML = "🧑‍💻 Humanize (Local)";
-          humanizeBtn.onclick = () => { 
-              humanizeDocument(idx, humanizeBtn); 
-          };
-          meta.appendChild(humanizeBtn);
-          
-          // ✨ THE CLEVERHUMANIZER BUTTON (Now Auto-Copies)
-          const premiumBtn = document.createElement("button");
-          premiumBtn.className = "action-btn premium"; 
-          premiumBtn.innerHTML = "✨ 100% Bypass";
-          
-          const h_link1 = "https://";
-          const h_link2 = "cleverhumanizer";
-          const h_link3 = ".ai/";
-          
-          premiumBtn.onclick = () => { 
-              // 1. Format the text nicely so it preserves paragraphs
-              const formattedText = m.reply.replace(/\r?\n/g, "\r\n");
-              
-              // 2. Try the modern clipboard API, fallback to text area hack if browser blocks it
-              if (navigator.clipboard && window.isSecureContext) {
-                  navigator.clipboard.writeText(formattedText);
-              } else {
-                  const textarea = document.createElement("textarea");
-                  textarea.value = formattedText;
-                  document.body.appendChild(textarea);
-                  textarea.select();
-                  document.execCommand("copy");
-                  document.body.removeChild(textarea);
-              }
-              
-              // 3. Open CleverHumanizer 
-              window.open(h_link1 + h_link2 + h_link3, "_blank", "noopener,noreferrer"); 
-              
-              // 4. Update the button text to show it worked!
-              const originalText = premiumBtn.innerHTML;
-              premiumBtn.innerHTML = "✓ Copied! Opening...";
-              setTimeout(() => premiumBtn.innerHTML = originalText, 2500);
-          };
-          meta.appendChild(premiumBtn);
       }
+      
+      const degradeBtn = document.createElement("button");
+      degradeBtn.className = "action-btn"; degradeBtn.innerHTML = "⬇️ Degrade (Year 8)";
+      degradeBtn.onclick = () => { 
+          degradeDocument(idx, degradeBtn); 
+      };
+      meta.appendChild(degradeBtn);
       
       if(m.isScriptMode) {
           const scriptDlBtn = document.createElement("button");
